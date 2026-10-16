@@ -28,4 +28,4 @@ Thumbs.db
 .vscode/
 *.swp
 
-experiments/data/*.csv
+database/data/*.csv
