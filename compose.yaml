@@ -1,0 +1,21 @@
+services:
+  db:
+    build:
+      context: ./database
+    env_file: .env
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # TCP on purpose: during first-run init the temporary server only listens on
+      # the Unix socket, so this stays unhealthy until the data load has finished.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  db-data:
