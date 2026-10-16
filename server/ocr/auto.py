@@ -51,8 +51,13 @@ class HandwrittenMedication(BaseModel):
     )
 
 
-class PackageResult(package.MedicationPackaging):
+class PackageResult(BaseModel):
+    """Only the fields needed to look the product up; the model may omit any of them."""
+
     kind: Literal["package"] = "package"
+    brandName: str | None = None
+    genericName: str | None = None
+    strength: str | None = None
 
 
 class HandwrittenResult(BaseModel):

@@ -23,7 +23,7 @@ server/
 │   ├── main.py          # FastAPI app, CORS, DB pool lifespan
 │   ├── config.py        # settings, loaded from the repo-root .env
 │   ├── db.py            # psycopg connection pool + `get_conn` dependency
-│   ├── prescriptions.py # Prescription/Substance models + SÚKL lookup
+│   ├── prescriptions.py # Prescription model + SÚKL lookup + merge
 │   └── routers/
 │       ├── auth.py      # POST /api/auth/login, /api/auth/logout (dummy)
 │       ├── health.py    # GET  /health
@@ -70,17 +70,29 @@ OCR model server defaults to 8000.
 
 ## `POST /scan`
 
-Multipart form with `file` (the image). A single model call classifies the image
-(packaging vs handwritten list) and extracts the data. The response is discriminated by `kind`:
+Multipart form with:
+
+- `file`: the image
+- `meds` (required): the current prescription list as a JSON array of `Prescription`
+  (`[]` if empty), e.g. `[{"drug":"PRESTARIUM NEO","mg":"5","subs":["PERINDOPRIL ARGININE"],"usage":"1-0-0"}]`
+
+A single model call classifies the image (packaging vs handwritten list) and reads the
+medications. Each is matched against SÚKL (`dlp_lecivepripravky` → `dlp_slozeni` → `dlp_latky`)
+to get `drug` (product name), `subs` (active substance names) and `mg` (their amounts converted to
+mg where possible, `/`-joined in `subs` order, e.g. `"450/50"`); if no product matches, `drug` is
+the name as read and `mg`/`subs` are empty.
+
+The result is merged into `meds` and the updated list is returned:
 
 ```jsonc
-{ "kind": "package", "brandName": "...", "genericName": null, "activeSubstance": "...", ... }
-{ "kind": "handwritten", "prescriptions": [{ "drug": "PRESTARIUM NEO", "subs": [{ "name": "PERINDOPRIL ARGININE", "mg": "5" }], "usage": "1-0-0" }] }
+{ "kind": "handwritten", "meds": [{ "drug": "PRESTARIUM NEO", "mg": "5", "subs": ["PERINDOPRIL ARGININE"], "usage": "1-0-1" }, ...] }
 ```
 
-Handwritten entries are matched against SÚKL (`dlp_lecivepripravky` → `dlp_slozeni` → `dlp_latky`)
-to get `drug` (product name) and `subs` (active substances, amount converted to mg where
-possible). If no product matches, `drug` is the name as read and `subs` is `[]`.
+- A scanned medication is **already present** if its `drug` name matches (case-insensitive).
+  Only its `usage` is updated, and only when the image showed one. Substances are not used for
+  matching, so different products with the same substance (e.g. generics) stay separate.
+- Otherwise it is **appended**. The order of `meds` is preserved.
+- Packaging has no dosing, so a package scan only adds the product if it's missing.
 
 `usage` is normalized to one of these notations, or `""` if not written / not recognised:
 
