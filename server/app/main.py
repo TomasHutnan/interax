@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.db import create_pool
-from app.routers import health, regimens, scan
+from app.routers import health, medications, regimens, scan
 
 
 @asynccontextmanager
@@ -29,5 +29,6 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
+app.include_router(medications.router)
 app.include_router(regimens.router)
 app.include_router(scan.router)

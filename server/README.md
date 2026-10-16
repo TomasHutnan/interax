@@ -25,6 +25,7 @@ server/
 │   ├── db.py            # psycopg connection pool + `get_conn` dependency
 │   └── routers/
 │       ├── health.py    # GET  /health
+│       ├── medications.py # GET /medications/substances?name=...
 │       ├── regimens.py  # GET  /regimens/{id}/components
 │       └── scan.py      # POST /scan/package, /scan/handwritten (wraps ocr/)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
