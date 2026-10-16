@@ -1,4 +1,7 @@
 fastapi
+uvicorn[standard]
+python-multipart
 requests
 dotenv
 pydantic
+psycopg[binary,pool]

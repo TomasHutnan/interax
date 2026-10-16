@@ -17,5 +17,19 @@ services:
       start_period: 60s
     restart: unless-stopped
 
+  server:
+    build:
+      context: ./server
+    env_file: .env
+    ports:
+      - "${SERVER_HOST_PORT:-8080}:8080"
+    extra_hosts:
+      # Lets the OCR modules reach a model server running on the host machine.
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   db-data:

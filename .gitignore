@@ -29,3 +29,5 @@ Thumbs.db
 *.swp
 
 database/data/*.csv
+
+server/serverenv
