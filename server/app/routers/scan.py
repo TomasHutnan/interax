@@ -1,35 +1,33 @@
-"""Image ingestion endpoints wrapping the OCR modules in `server/ocr/`.
+"""Image ingestion endpoint wrapping the OCR modules in `server/ocr/`.
 
-Endpoints are sync (`def`) on purpose: the OCR calls use blocking `requests`,
-so FastAPI runs them in its threadpool instead of blocking the event loop.
+The endpoint is sync (`def`) on purpose: the OCR calls use blocking `requests`,
+so FastAPI runs it in its threadpool instead of blocking the event loop.
 """
 
+import requests
 from fastapi import APIRouter, HTTPException, UploadFile
-from ocr import handwritten, package
+from ocr import auto
 
 router = APIRouter(prefix="/scan", tags=["scan"])
 
 
-def _read_image(file: UploadFile) -> bytes:
-    if not (file.content_type or "").startswith("image/"):
+@router.post("")
+def scan(file: UploadFile) -> auto.ScanResult:
+    """Digitize one medication image.
+
+    The model decides whether it shows packaging or a handwritten list; the
+    response's `kind` field says which shape was returned.
+    """
+    content_type = file.content_type or ""
+    if not content_type.startswith("image/"):
         raise HTTPException(status_code=415, detail="expected an image upload")
-    data = file.file.read()
-    if not data:
+    image = file.file.read()
+    if not image:
         raise HTTPException(status_code=400, detail="empty file")
-    return data
 
-
-@router.post("/package")
-def scan_package(file: UploadFile) -> dict:
     try:
-        return package.process_medication(_read_image(file))
-    except (RuntimeError, ValueError) as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-
-
-@router.post("/handwritten")
-def scan_handwritten(file: UploadFile) -> list[dict]:
-    try:
-        return handwritten.process_medication(_read_image(file))
+        return auto.scan(image, mime_type=content_type)
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=502, detail="OCR model unreachable") from exc
     except (RuntimeError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc

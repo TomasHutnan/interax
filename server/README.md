@@ -26,8 +26,11 @@ server/
 │   └── routers/
 │       ├── health.py    # GET  /health
 │       ├── regimens.py  # GET  /regimens/{id}/components
-│       └── scan.py      # POST /scan/package, /scan/handwritten (wraps ocr/)
+│       └── scan.py      # POST /scan (auto-detects package vs handwritten)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
+    ├── auto.py          # classify + extract in one model call
+    ├── package.py       # dedicated packaging prompt
+    └── handwritten.py   # dedicated handwritten-list prompt
 ```
 
 ## Configuration
@@ -61,3 +64,13 @@ POSTGRES_HOST=localhost POSTGRES_PORT=5432 uvicorn app.main:app --reload --port 
 
 Use your `POSTGRES_HOST_PORT` value for `POSTGRES_PORT`. Port 8080 is used because the
 OCR model server defaults to 8000.
+
+## `POST /scan`
+
+Multipart form with `file` (the image). A single model call classifies the image
+(packaging vs handwritten list) and extracts the data. The response is discriminated by `kind`:
+
+```jsonc
+{ "kind": "package", "brandName": "...", "genericName": null, "activeSubstance": "...", ... }
+{ "kind": "handwritten", "medications": [{ "name": "...", "dosage": "..." }] }
+```
