@@ -1,5 +1,6 @@
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from itertools import combinations
 from pathlib import Path
@@ -31,9 +32,11 @@ def get_interactions(substances: list[str]) -> list[Interaction]:
     if len(substances) <= 10:
         return __fetch_interactions(substances)
 
+    combinations_list = __generate_substance_combinations(substances)
     interactions: list[Interaction] = []
-    for combination in __generate_substance_combinations(substances):
-        interactions.extend(__fetch_interactions(combination))
+    with ThreadPoolExecutor() as executor:
+        for batch in executor.map(__fetch_interactions, combinations_list):
+            interactions.extend(batch)
 
     return __deduplicate_interactions(interactions)
 
@@ -50,7 +53,9 @@ def __generate_substance_combinations(
     return [block1 + block2 for block1, block2 in combinations(blocks, 2)]
 
 
-def __deduplicate_interactions(interactions: list[Interaction]) -> list[Interaction]:
+def __deduplicate_interactions(
+    interactions: list[Interaction],
+) -> list[Interaction]:
     seen_interaction: set[tuple[str, str]] = set()
     deduplicated_interactions: list[Interaction] = []
 
@@ -114,6 +119,3 @@ def __fetch_interactions(substances: list[str]) -> list[Interaction]:
             )
 
     return interactions
-
-
-__request_interactions = __fetch_interactions
