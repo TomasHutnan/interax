@@ -1,8 +1,6 @@
--- GiST (not GIN) so the `<->` trigram distance can drive an index-ordered nearest-match scan.
 CREATE INDEX idx_dlp_lecivepripravky_nazev_trgm
     ON dlp_lecivepripravky USING gist (lower(nazev) gist_trgm_ops);
 
--- Every medicinal product with each substance in its composition.
 CREATE VIEW medication_substances AS
 SELECT p.kod_sukl,
        p.nazev,
@@ -18,9 +16,6 @@ FROM dlp_lecivepripravky p
 JOIN dlp_slozeni s ON s.kod_sukl = p.kod_sukl
 JOIN dlp_latky l   ON l.kod_latky = s.kod_latky;
 
--- Substances of the product whose name best matches free text (e.g. OCR output).
--- Ties on name (same product in different packages) are broken by matching name + strength.
--- Returns nothing when no product name reaches p_min_score trigram similarity.
 CREATE FUNCTION match_medication_substances(p_query text, p_min_score real DEFAULT 0.2)
 RETURNS TABLE (
     kod_sukl          text,

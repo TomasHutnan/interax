@@ -26,7 +26,7 @@ server/
 │   └── routers/
 │       ├── health.py    # GET  /health
 │       ├── medications.py # GET /medications/substances?name=...
-│       ├── regimens.py  # GET  /regimens/{id}/components
+│       ├── regimens.py  # GET  /regimens/components?name=...
 │       └── scan.py      # POST /scan (auto-detects package vs handwritten)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
     ├── auto.py          # classify + extract in one model call

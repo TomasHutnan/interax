@@ -17,6 +17,7 @@ PROMPT = (
     '- "handwritten": a list or schedule of medications written on paper '
     "(handwritten or printed), possibly with several medications.\n"
     "Then extract the information for that kind.\n"
+    "Whenever you come across text that's provided in multiple languages make sure to choose only ONE language and prioritize Czech language.\n"
     "For package: the brand (trade) name, generic name, active substance(s), strength "
     "(e.g. 500 mg), dosage form (e.g. tablets, syrup), quantity (e.g. 20 tablets) and "
     "manufacturer. Normalize the brand/generic name. If a field is not visible, use null.\n"

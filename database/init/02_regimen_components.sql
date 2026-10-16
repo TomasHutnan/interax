@@ -1,4 +1,4 @@
-CREATE FUNCTION regimen_components(p_regimen_id integer)
+CREATE FUNCTION regimen_components(p_regimen_name text)
 RETURNS TABLE (
     concept_id   integer,
     concept_name varchar(255),
@@ -12,9 +12,10 @@ AS $$
     FROM concept regimen
     JOIN concept_relationship rel ON rel.concept_id_1 = regimen.concept_id
     JOIN concept drug ON drug.concept_id = rel.concept_id_2
-    WHERE regimen.concept_id = p_regimen_id
+    WHERE lower(regimen.concept_name) = lower(btrim(p_regimen_name))
       AND regimen.domain_id = 'Regimen'
       AND regimen.concept_class_id = 'Regimen'
+      AND regimen.invalid_reason IS NULL
       AND drug.domain_id = 'Drug'
       AND drug.concept_class_id = 'Component'
       AND rel.invalid_reason IS NULL
