@@ -93,6 +93,21 @@ def __fetch_interactions(substances: list[str]) -> list[Interaction]:
     response.raise_for_status()
 
     data = response.json()
+    resolutions = data.get("resolutions", [])
+    if isinstance(resolutions, str):
+        resolutions = json.loads(resolutions)
+
+    resolved_to_input: dict[str, str] = {}
+    for res in resolutions:
+        input_name = res.get("inputName")
+        if not input_name:
+            continue
+        resolved_to_input[input_name.lower()] = input_name
+        if res.get("genericName"):
+            resolved_to_input[res["genericName"].lower()] = input_name
+        for brand in res.get("brandNames", []):
+            resolved_to_input[brand.lower()] = input_name
+
     pairs = data.get("pairs", [])
     if isinstance(pairs, str):
         pairs = json.loads(pairs)
@@ -106,13 +121,16 @@ def __fetch_interactions(substances: list[str]) -> list[Interaction]:
         if isinstance(pair_interactions, str):
             pair_interactions = json.loads(pair_interactions)
 
+        sub_1 = resolved_to_input.get(pair["drugA"].lower(), pair["drugA"]) or ""
+        sub_2 = resolved_to_input.get(pair["drugB"].lower(), pair["drugB"]) or ""
+
         for interaction in pair_interactions:
             mechanism = interaction.get("mechanism") or ""
             severity = interaction.get("severity") or "unknown"
             interactions.append(
                 Interaction(
-                    substance_1=pair["drugA"],
-                    substance_2=pair["drugB"],
+                    substance_1=sub_1,
+                    substance_2=sub_2,
                     description=mechanism,
                     severity=severity,
                 )
