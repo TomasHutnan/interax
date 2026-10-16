@@ -14,6 +14,41 @@ class RegimenComponent(BaseModel):
     concept_name: str
 
 
+class Regimen(BaseModel):
+    concept_name: str
+
+
+def _escape_like(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+@router.get("/find")
+def find_regimens(
+    conn: Annotated[Connection[DictRow], Depends(get_conn)],
+    text: str = "",
+) -> list[Regimen]:
+    """Regimens whose name contains `text` (case-insensitive); all regimens if empty.
+
+    Ordered by exact match, then prefix match, then name.
+    """
+    query = _escape_like(text.strip().lower())
+    rows = conn.execute(
+        """
+        SELECT concept_name
+        FROM concept
+        WHERE domain_id = 'Regimen'
+          AND concept_class_id = 'Regimen'
+          AND invalid_reason IS NULL
+          AND lower(concept_name) LIKE %(contains)s
+        ORDER BY lower(concept_name) LIKE %(exact)s DESC,
+                 lower(concept_name) LIKE %(prefix)s DESC,
+                 concept_name
+        """,
+        {"contains": f"%{query}%", "exact": query, "prefix": f"{query}%"},
+    ).fetchall()
+    return [Regimen(**row) for row in rows]
+
+
 @router.get("/components")
 def regimen_components(
     name: Annotated[str, Query(min_length=1)],

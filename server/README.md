@@ -23,10 +23,11 @@ server/
 │   ├── main.py          # FastAPI app, CORS, DB pool lifespan
 │   ├── config.py        # settings, loaded from the repo-root .env
 │   ├── db.py            # psycopg connection pool + `get_conn` dependency
+│   ├── prescriptions.py # Prescription/Substance models + SÚKL lookup
 │   └── routers/
 │       ├── health.py    # GET  /health
 │       ├── medications.py # GET /medications/substances?name=...
-│       ├── regimens.py  # GET  /regimens/components?name=...
+│       ├── regimens.py  # GET  /regimens/find?text=..., /regimens/components?name=...
 │       └── scan.py      # POST /scan (auto-detects package vs handwritten)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
     ├── auto.py          # classify + extract in one model call
@@ -73,5 +74,22 @@ Multipart form with `file` (the image). A single model call classifies the image
 
 ```jsonc
 { "kind": "package", "brandName": "...", "genericName": null, "activeSubstance": "...", ... }
-{ "kind": "handwritten", "medications": [{ "name": "...", "dosage": "..." }] }
+{ "kind": "handwritten", "prescriptions": [{ "drug": "PRESTARIUM NEO", "subs": [{ "name": "PERINDOPRIL ARGININE", "mg": "5" }], "usage": "1-0-0" }] }
 ```
+
+Handwritten entries are matched against SÚKL (`dlp_lecivepripravky` → `dlp_slozeni` → `dlp_latky`)
+to get `drug` (product name) and `subs` (active substances, amount converted to mg where
+possible). If no product matches, `drug` is the name as read and `subs` is `[]`.
+
+`usage` is normalized to one of these notations, or `""` if not written / not recognised:
+
+| Notation  | Meaning                                        |
+| --------- | ---------------------------------------------- |
+| `a-b-c`   | pieces in the morning, at noon, in the evening |
+| `k*`      | k times a day, no set time                     |
+| `á n dní` | one piece every n days                         |
+
+## `GET /medications/substances?name=...`
+
+Best-matching SÚKL product for a free-text name, as a `Prescription` (with `usage: ""`); 404 if
+nothing is similar enough.

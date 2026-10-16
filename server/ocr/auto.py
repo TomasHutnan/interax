@@ -8,8 +8,8 @@ import base64
 from typing import Annotated, Literal
 
 import requests
-from ocr import handwritten, package
-from pydantic import Field, TypeAdapter
+from ocr import package
+from pydantic import BaseModel, Field, TypeAdapter
 
 PROMPT = (
     "First decide what the image shows:\n"
@@ -22,24 +22,42 @@ PROMPT = (
     "(e.g. 500 mg), dosage form (e.g. tablets, syrup), quantity (e.g. 20 tablets) and "
     "manufacturer. Normalize the brand/generic name. If a field is not visible, use null.\n"
     "For handwritten: read ALL medications, one entry per medication, in the order they "
-    "appear, with name and dosage (strength and/or frequency if shown, otherwise null). "
-    "Do not skip lines, do not merge different medications, and do not invent entries. "
-    "If no medication is visible, return an empty list.\n"
+    "appear. Do not skip lines, do not merge different medications, and do not invent "
+    "entries. If no medication is visible, return an empty list. For each medication extract:\n"
+    "- name: the medication name as written, including the strength if written "
+    '(e.g. "Prestarium Neo 5 mg").\n'
+    "- usage: how the medication is taken, written in one of three notations. "
+    "Return it normalized to that notation:\n"
+    '  1. "a-b-c" (e.g. "1-0-1", "1/2-0-2"): pieces in the morning, at noon and in '
+    'the evening -> return e.g. "1-0-1".\n'
+    '  2. "á n dní" / "á n dny" (one piece every n days; the accent on "á" may be '
+    'missing) -> return e.g. "á 2 dny".\n'
+    '  3. "k*" or "kx" (e.g. "3*", "2x denně"; k times a day, no set time) '
+    '-> return e.g. "3*".\n'
+    '  If no usage is written, or it matches none of these notations, use "". Do not guess.\n'
     "Keep text in the original language. "
     "Respond with ONLY valid JSON, no commentary, in exactly one of these shapes:\n"
     '{"kind":"package","brandName":"string","genericName":"string or null",'
     '"activeSubstance":"string","strength":"string","dosageForm":"string",'
     '"quantity":"string","manufacturer":"string"}\n'
-    '{"kind":"handwritten","medications":[{"name":"string","dosage":"string or null"}]}'
+    '{"kind":"handwritten","medications":[{"name":"string","usage":"string"}]}'
 )
+
+
+class HandwrittenMedication(BaseModel):
+    name: str
+    usage: str | None = (
+        None  # tolerate null from the model; normalized to "" downstream
+    )
 
 
 class PackageResult(package.MedicationPackaging):
     kind: Literal["package"] = "package"
 
 
-class HandwrittenResult(handwritten.MedicationList):
+class HandwrittenResult(BaseModel):
     kind: Literal["handwritten"] = "handwritten"
+    medications: list[HandwrittenMedication] = Field(default_factory=list)
 
 
 ScanResult = Annotated[PackageResult | HandwrittenResult, Field(discriminator="kind")]
