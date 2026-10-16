@@ -25,6 +25,7 @@ server/
 │   ├── db.py            # psycopg connection pool + `get_conn` dependency
 │   ├── prescriptions.py # Prescription/Substance models + SÚKL lookup
 │   └── routers/
+│       ├── auth.py      # POST /api/auth/login, /api/auth/logout (dummy)
 │       ├── health.py    # GET  /health
 │       ├── medications.py # GET /medications/substances?name=...
 │       ├── regimens.py  # GET  /regimens/find?text=..., /regimens/components?name=...
