@@ -79,7 +79,9 @@ def scan(
             )
         else:
             scanned = [
-                _resolve(conn, med.name, med.usage or "") for med in result.medications
+                _resolve(conn, med.name, med.usage or "")
+                for med in result.medications
+                if med.name and med.name.strip()
             ]
 
     return ScanResponse(kind=result.kind, meds=merge_prescriptions(current, scanned))

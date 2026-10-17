@@ -84,6 +84,7 @@ def dictate(
             lookup_prescription(conn, med.name, med.usage or "")
             or Prescription(drug=med.name, usage=med.usage or "")
             for med in dictated
+            if med.name and med.name.strip()
         ]
 
     return DictateResponse(transcript=text, meds=merge_prescriptions(current, scanned))

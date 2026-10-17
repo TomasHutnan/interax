@@ -239,6 +239,10 @@ if set -q BOOTSTRAP_ADMIN_USERNAME; and set -q BOOTSTRAP_ADMIN_PASSWORD
 end
 
 set -l SERVER_IMAGE $ACR_SERVER/interax-server:$SERVER_TAG
+# Whisper + the RAG embedding model (PyTorch) need ~1.5-2 GiB together; more
+# CPU also makes transcription noticeably faster. Valid pairs: 0.5/1Gi ... 2/4Gi.
+set -l SERVER_CPU 2
+set -l SERVER_MEMORY 4Gi
 if az containerapp show --name $SERVER_APP --resource-group $RG -o none 2>/dev/null
     step "Updating $SERVER_APP"
     az containerapp secret set --name $SERVER_APP --resource-group $RG \
@@ -247,6 +251,7 @@ if az containerapp show --name $SERVER_APP --resource-group $RG -o none 2>/dev/n
     # New revision every time: secret changes alone don't restart the app.
     az containerapp update --name $SERVER_APP --resource-group $RG \
         --image $SERVER_IMAGE --set-env-vars $server_env \
+        --cpu $SERVER_CPU --memory $SERVER_MEMORY \
         --revision-suffix r$STAMP -o none --only-show-errors
     or fail "could not update $SERVER_APP"
 else
@@ -255,7 +260,7 @@ else
         --image $SERVER_IMAGE \
         --registry-server $ACR_SERVER --registry-username $ACR_USER --registry-password $ACR_PASS \
         --ingress internal --target-port 8080 \
-        --cpu 0.5 --memory 1Gi --min-replicas 1 --max-replicas 1 \
+        --cpu $SERVER_CPU --memory $SERVER_MEMORY --min-replicas 1 --max-replicas 1 \
         --secrets $server_secrets \
         --env-vars $server_env \
         -o none --only-show-errors

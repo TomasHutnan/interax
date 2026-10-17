@@ -23,7 +23,7 @@ PROMPT = (
     "(e.g. 500 mg), dosage form (e.g. tablets, syrup), quantity (e.g. 20 tablets) and "
     "manufacturer. Normalize the brand/generic name. If a field is not visible, use null.\n"
     "Also look for dosing instructions added to the package by hand or on a sticker, "
-    "usually by the pharmacist (e.g. \"1-0-1\", \"3x denně\", \"ráno 1\"). Return them as "
+    'usually by the pharmacist (e.g. "1-0-1", "3x denně", "ráno 1"). Return them as '
     "usage, normalized to the notations described under handwritten below. Printed "
     "text such as the leaflet's general dosage advice is NOT usage. If there is no "
     'such note, use "".\n'
@@ -51,7 +51,9 @@ PROMPT = (
 
 
 class HandwrittenMedication(BaseModel):
-    name: str
+    # Optional so one nameless entry from the model doesn't fail the whole result;
+    # callers skip entries without a name.
+    name: str | None = None
     usage: str | None = (
         None  # tolerate null from the model; normalized to "" downstream
     )
