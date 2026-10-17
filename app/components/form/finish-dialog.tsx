@@ -7,7 +7,6 @@ import {
   interactionInputs,
   meetsThreshold,
   Severity,
-  SEVERITY_LABELS,
   toRepoPayload,
   uploadToRepo,
 } from "@/lib/interactions";
@@ -21,7 +20,7 @@ import {
 } from "../ui/dialog";
 import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
-import { IntBadge } from "./interactions-panel";
+import { IntBadge, IntBadge0 } from "./interactions-panel";
 
 type Props = {
   open: boolean;
@@ -126,7 +125,7 @@ function Internal({
       <div className="space-y-2">
         <p className="text-sm">
           Interactions at or above{" "}
-          <span className="font-bold">{SEVERITY_LABELS[threshold]}</span>:
+          <IntBadge0 severity={threshold} />:
         </p>
         {!inputs.complete ? (
           <p className="text-sm text-muted-foreground">

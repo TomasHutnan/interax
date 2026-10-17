@@ -82,7 +82,7 @@ export function SeveritySlider({
     <label className="block space-y-1 pb-2 border-b border-border">
       <span className="flex justify-between text-sm">
         <span>Minimum severity:</span>
-        <span className="font-bold">{SEVERITY_LABELS[threshold]}</span>
+        <IntBadge0 severity={threshold} />
       </span>
       <input
         type="range"
@@ -242,6 +242,10 @@ const BADGES: Record<
 
 export function IntBadge({ int }: { int: Interaction }) {
   const severity = normalizeSeverity(int[3]);
+    return <IntBadge0 severity={severity} />
+}
+
+export function IntBadge0({ severity }: { severity: Severity }) {
   const badge = BADGES[severity];
   return (
     <Badge variant={badge.variant} className={badge.className}>
