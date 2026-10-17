@@ -12,10 +12,10 @@ from app.prescriptions import Prescription
 
 try:
     from rag import upload_to_fhir
-    from rag.pipeline import IRIS_HOST
+    from rag.config import IRIS_HOST
 except ModuleNotFoundError:
     from server.rag import upload_to_fhir
-    from server.rag.pipeline import IRIS_HOST
+    from server.rag.config import IRIS_HOST
 
 log = logging.getLogger("uvicorn.error")
 

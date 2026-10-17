@@ -11,7 +11,7 @@ export type Theme = (typeof THEMES)[number];
 
 export const BACKGROUNDS = ["ecg", "lines", "waves", "plain"] as const;
 export type Background = (typeof BACKGROUNDS)[number];
-export const DEFAULT_BACKGROUND: Background = "ecg";
+export const DEFAULT_BACKGROUND: Background = "plain";
 
 export const LOCALES = ["en", "cs", "sk", "uk"] as const;
 export type Locale = (typeof LOCALES)[number];

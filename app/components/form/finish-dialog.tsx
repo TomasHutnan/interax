@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
 import { Interaction, MPatientForm } from "@/lib/typings";
 import { useGetInteractions } from "@/lib/hooks/bundles";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
@@ -34,8 +34,8 @@ type Props = {
 };
 
 /**
- * Shown when the doctor finishes viewing: offers to send the medications and the observed
- * interactions (those at or above the severity threshold) to the FHIR repository.
+ * Shown when the doctor picks "Finish and send": lets them review which medications and observed
+ * interactions (those at or above the severity threshold) go to the FHIR repository.
  */
 export default function FinishDialog({ open, onOpenChange, ...rest }: Props) {
   return (
@@ -172,16 +172,13 @@ function Internal({
         <Button variant="outline" onClick={onCancel} disabled={sending}>
           {t("back")}
         </Button>
-        <Button variant="outline" onClick={onExit} disabled={sending}>
-          <X />
-          {t("finishWithoutSending")}
-        </Button>
+
         <Button
           onClick={send}
           disabled={sending || loading || meds.length === 0}
         >
           <Send />
-          {sending ? t("sending") : t("sendAndFinish")}
+          {sending ? t("sending") : t("confirm")}
         </Button>
       </DialogFooter>
     </>

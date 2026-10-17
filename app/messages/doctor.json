@@ -12,7 +12,8 @@
       "showInteractions": "See interactions",
       "hideInteractions": "Hide interactions",
       "reset": "Reset",
-      "finish": "Finish viewing",
+      "finishWithoutSending": "Finish without sending",
+      "finishAndSend": "Finish and send",
       "copy": {
         "button": "Copy as text",
         "verbose": "Verbose (multiline)",
@@ -48,16 +49,15 @@
       "withDosing": "with dosing"
     },
     "finish": {
-      "title": "Send to repository?",
-      "description": "Before closing, you can send this patient's {count, plural, one {# medication} other {# medications}} and the interactions you observed to the FHIR repository. No personal data is sent.",
+      "title": "Review what will be sent",
+      "description": "This patient's {count, plural, one {# medication} other {# medications}} and the selected interactions will be sent to the FHIR repository. No personal data is sent.",
       "atOrAbove": "Interactions at or above <badge></badge>:",
       "incomplete": "Interactions can't be checked because some substances are missing. Only the medications will be sent.",
       "checking": "Checking interactions...",
       "error": "Could not check interactions. Only the medications will be sent.",
       "none": "None.",
       "back": "Back to review",
-      "finishWithoutSending": "Finish without sending",
-      "sendAndFinish": "Send and finish",
+      "confirm": "Confirm and send",
       "sending": "Sending...",
       "toast": {
         "loading": "Sending to repository...",
@@ -85,7 +85,8 @@
       "showInteractions": "Zobrazit interakce",
       "hideInteractions": "Skrýt interakce",
       "reset": "Obnovit",
-      "finish": "Ukončit prohlížení",
+      "finishWithoutSending": "Ukončit bez odeslání",
+      "finishAndSend": "Ukončit a odeslat",
       "copy": {
         "button": "Kopírovat jako text",
         "verbose": "Podrobně (více řádků)",
@@ -121,16 +122,15 @@
       "withDosing": "s dávkováním"
     },
     "finish": {
-      "title": "Odeslat do repozitáře?",
-      "description": "Před zavřením můžete do repozitáře FHIR odeslat {count, plural, one {# lék} few {# léky} many {# léku} other {# léků}} tohoto pacienta a zjištěné interakce. Neodesílají se žádné osobní údaje.",
+      "title": "Zkontrolujte, co bude odesláno",
+      "description": "Do repozitáře FHIR bude odesláno {count, plural, one {# lék} few {# léky} many {# léku} other {# léků}} tohoto pacienta a vybrané interakce. Neodesílají se žádné osobní údaje.",
       "atOrAbove": "Interakce se závažností <badge></badge> a vyšší:",
       "incomplete": "Interakce nelze zkontrolovat, protože chybí některé léčivé látky. Odeslány budou pouze léky.",
       "checking": "Kontrola interakcí...",
       "error": "Interakce se nepodařilo zkontrolovat. Odeslány budou pouze léky.",
       "none": "Žádné.",
       "back": "Zpět ke kontrole",
-      "finishWithoutSending": "Ukončit bez odeslání",
-      "sendAndFinish": "Odeslat a ukončit",
+      "confirm": "Potvrdit a odeslat",
       "sending": "Odesílání...",
       "toast": {
         "loading": "Odesílání do repozitáře...",
@@ -158,7 +158,8 @@
       "showInteractions": "Zobraziť interakcie",
       "hideInteractions": "Skryť interakcie",
       "reset": "Obnoviť",
-      "finish": "Ukončiť prezeranie",
+      "finishWithoutSending": "Ukončiť bez odoslania",
+      "finishAndSend": "Ukončiť a odoslať",
       "copy": {
         "button": "Kopírovať ako text",
         "verbose": "Podrobne (viac riadkov)",
@@ -194,16 +195,15 @@
       "withDosing": "s dávkovaním"
     },
     "finish": {
-      "title": "Odoslať do repozitára?",
-      "description": "Pred zatvorením môžete do repozitára FHIR odoslať {count, plural, one {# liek} few {# lieky} many {# lieku} other {# liekov}} tohto pacienta a zistené interakcie. Neodosielajú sa žiadne osobné údaje.",
+      "title": "Skontrolujte, čo bude odoslané",
+      "description": "Do repozitára FHIR sa odošle {count, plural, one {# liek} few {# lieky} many {# lieku} other {# liekov}} tohto pacienta a vybrané interakcie. Neodosielajú sa žiadne osobné údaje.",
       "atOrAbove": "Interakcie so závažnosťou <badge></badge> a vyššou:",
       "incomplete": "Interakcie nemožno skontrolovať, pretože chýbajú niektoré liečivé látky. Odoslané budú iba lieky.",
       "checking": "Kontrola interakcií...",
       "error": "Interakcie sa nepodarilo skontrolovať. Odoslané budú iba lieky.",
       "none": "Žiadne.",
       "back": "Späť na kontrolu",
-      "finishWithoutSending": "Ukončiť bez odoslania",
-      "sendAndFinish": "Odoslať a ukončiť",
+      "confirm": "Potvrdiť a odoslať",
       "sending": "Odosielanie...",
       "toast": {
         "loading": "Odosielanie do repozitára...",
@@ -231,7 +231,8 @@
       "showInteractions": "Показати взаємодії",
       "hideInteractions": "Сховати взаємодії",
       "reset": "Скинути",
-      "finish": "Завершити перегляд",
+      "finishWithoutSending": "Завершити без надсилання",
+      "finishAndSend": "Завершити й надіслати",
       "copy": {
         "button": "Копіювати як текст",
         "verbose": "Детально (кілька рядків)",
@@ -267,16 +268,15 @@
       "withDosing": "з дозуванням"
     },
     "finish": {
-      "title": "Надіслати до репозиторію?",
-      "description": "Перед закриттям ви можете надіслати до репозиторію FHIR {count, plural, one {# препарат} few {# препарати} many {# препаратів} other {# препарату}} цього пацієнта та виявлені взаємодії. Персональні дані не надсилаються.",
+      "title": "Перевірте, що буде надіслано",
+      "description": "До репозиторію FHIR буде надіслано {count, plural, one {# препарат} few {# препарати} many {# препаратів} other {# препарату}} цього пацієнта та вибрані взаємодії. Персональні дані не надсилаються.",
       "atOrAbove": "Взаємодії з тяжкістю <badge></badge> і вище:",
       "incomplete": "Неможливо перевірити взаємодії, оскільки бракує деяких діючих речовин. Буде надіслано лише препарати.",
       "checking": "Перевірка взаємодій...",
       "error": "Не вдалося перевірити взаємодії. Буде надіслано лише препарати.",
       "none": "Немає.",
       "back": "Повернутися до перегляду",
-      "finishWithoutSending": "Завершити без надсилання",
-      "sendAndFinish": "Надіслати й завершити",
+      "confirm": "Підтвердити й надіслати",
       "sending": "Надсилання...",
       "toast": {
         "loading": "Надсилання до репозиторію...",

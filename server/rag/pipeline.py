@@ -1,5 +1,9 @@
 """High-level orchestration for the InterSystems IRIS Clinical RAG pipeline."""
 
+import logging
+
+import requests
+
 from rag.adjudicator import adjudicate_interactions, enforce_concise_text
 from rag.config import AdjudicatedPair, RagInteraction, ResolvedMed, get_iris_connection
 from rag.fhir import upload_to_fhir
@@ -10,6 +14,8 @@ from rag.iris_store import (
 )
 
 __all__ = ["RagInteraction", "check_rag_interactions", "upload_to_fhir"]
+
+log = logging.getLogger("uvicorn.error")
 
 
 def _fetch_iris_context(
@@ -80,5 +86,10 @@ def check_rag_interactions(substances: list[str]) -> list[RagInteraction]:
     if not ddi_hits:
         return []
 
-    adjudications = adjudicate_interactions(resolved, ddi_hits, cpic_chunks)
+    # The LLM only rewords the DDInter hits; if it's down, still return the hits.
+    try:
+        adjudications = adjudicate_interactions(resolved, ddi_hits, cpic_chunks)
+    except requests.RequestException:
+        log.exception("adjudicator request failed; using DDInter text")
+        adjudications = {}
     return _map_adjudicated_results(resolved, ddi_hits, adjudications)

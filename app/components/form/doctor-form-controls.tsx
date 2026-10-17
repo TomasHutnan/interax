@@ -1,6 +1,13 @@
 import { MPatientForm } from "@/lib/typings";
 import { Button } from "../ui/button";
-import { Check, Clipboard, Eye, EyeClosed, RotateCcw } from "lucide-react";
+import {
+  Check,
+  Clipboard,
+  Eye,
+  EyeClosed,
+  RotateCcw,
+  Send,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,12 +25,14 @@ export default function DoctorFormControls({
   open,
   setOpen,
   onFinish,
+  onFinishAndSend,
 }: {
   reset: () => void;
   state: MPatientForm;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   onFinish: () => void;
+  onFinishAndSend: () => void;
 }) {
   const t = useTranslations("doctor.controls");
   return (
@@ -40,9 +49,13 @@ export default function DoctorFormControls({
           <RotateCcw />
           {t("reset")}
         </Button>
-        <Button onClick={onFinish}>
+        <Button variant={"outline"} onClick={onFinish}>
           <Check />
-          {t("finish")}
+          {t("finishWithoutSending")}
+        </Button>
+        <Button onClick={onFinishAndSend}>
+          <Send />
+          {t("finishAndSend")}
         </Button>
       </div>
     </div>

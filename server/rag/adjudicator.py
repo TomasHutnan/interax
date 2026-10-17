@@ -1,11 +1,20 @@
 """Azure APIM LLM adjudication and strict output sanitization."""
 
 import json
+import logging
 import re
 
 import requests
 
-from rag.config import APIM_API_KEY, APIM_BASE_URL, APIM_MODEL, AdjudicatedPair, ResolvedMed
+from rag.config import (
+    APIM_API_KEY,
+    APIM_BASE_URL,
+    APIM_MODEL,
+    AdjudicatedPair,
+    ResolvedMed,
+)
+
+log = logging.getLogger("uvicorn.error")
 
 SYSTEM_PROMPT = (
     "You are a deterministic clinical pharmacology analyzer. "
@@ -66,10 +75,17 @@ def _build_user_payload(
     )
 
 
-def _parse_llm_json(raw_content: str) -> dict[str, object]:
-    cleaned = re.sub(r"<think>[\s\S]*?</think>", "", raw_content).strip()
+def _parse_llm_json(raw_content: str | None) -> dict[str, object] | None:
+    """Extract the JSON object from the reply; None if there isn't a usable one."""
+    cleaned = re.sub(r"<think>[\s\S]*?</think>", "", raw_content or "").strip()
     start, end = cleaned.find("{"), cleaned.rfind("}")
-    return json.loads(cleaned[start : end + 1])
+    if start == -1 or end < start:
+        return None
+    try:
+        parsed = json.loads(cleaned[start : end + 1])
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
 
 
 def adjudicate_interactions(
@@ -77,7 +93,11 @@ def adjudicate_interactions(
     ddi_hits: list[dict[str, str]],
     cpic_chunks: list[dict[str, object]],
 ) -> dict[str, AdjudicatedPair]:
-    """Call Azure APIM to synthesize <=10-word mechanism and consequence per pairing."""
+    """Call Azure APIM to synthesize <=10-word mechanism and consequence per pairing.
+
+    Returns {} when the model gives no usable answer, so callers fall back to the
+    deterministic DDInter text instead of failing the whole interaction check.
+    """
     resp = requests.post(
         f"{APIM_BASE_URL}/chat/completions",
         headers={"Content-Type": "application/json", "api-key": APIM_API_KEY},
@@ -85,23 +105,38 @@ def adjudicate_interactions(
             "model": APIM_MODEL,
             "stream": False,
             "temperature": 1,
-            "max_completion_tokens": 1200,
+            # Reasoning models spend hidden tokens before answering; too small a
+            # budget yields an empty `content` with finish_reason="length".
+            "max_completion_tokens": 6000,
             "response_format": {"type": "json_object"},
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": _build_user_payload(resolved, ddi_hits, cpic_chunks)},
+                {
+                    "role": "user",
+                    "content": _build_user_payload(resolved, ddi_hits, cpic_chunks),
+                },
             ],
         },
         timeout=60,
     )
     resp.raise_for_status()
-    parsed = _parse_llm_json(resp.json()["choices"][0]["message"]["content"])
+    choice = (resp.json().get("choices") or [{}])[0]
+    parsed = _parse_llm_json((choice.get("message") or {}).get("content"))
+    if parsed is None:
+        log.warning(
+            "adjudicator returned no usable JSON (finish_reason=%s); using DDInter text",
+            choice.get("finish_reason"),
+        )
+        return {}
 
     adjudications: dict[str, AdjudicatedPair] = {}
     for pair_key, val in parsed.items():
         if not isinstance(val, dict):
             continue
-        if "pathophysiological_mechanism" not in val or "clinical_consequence" not in val:
+        if (
+            "pathophysiological_mechanism" not in val
+            or "clinical_consequence" not in val
+        ):
             continue
         adjudications[pair_key] = AdjudicatedPair(
             pathophysiological_mechanism=enforce_concise_text(

@@ -79,7 +79,8 @@ export default function DoctorForm({ form }: { form: PatientForm }) {
           state={state}
           open={showInts}
           setOpen={setShowInts}
-          onFinish={() => setFinishing(true)}
+          onFinish={exit}
+          onFinishAndSend={() => setFinishing(true)}
         />
       </div>
       {showInts && (
