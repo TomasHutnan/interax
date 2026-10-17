@@ -62,6 +62,14 @@ export default function PatientFormList() {
     } else toast.add({ type: "error", title: "Could not delete the form." });
   }
 
+  function copyCode(code: string) {
+    // the clipboard is unavailable outside secure contexts
+    Promise.resolve()
+      .then(() => navigator.clipboard.writeText(code))
+      .then(() => toast.add({ type: "success", title: "PIN copied to clipboard." }))
+      .catch(() => toast.add({ type: "error", title: "Could not copy the PIN." }));
+  }
+
   function getCode(id: string) {
     if (busy) return;
 
@@ -146,7 +154,14 @@ export default function PatientFormList() {
                     "-mt-4 -mx-4 flex items-center justify-between space-y-1 bg-green-500/50 px-4 py-2 text-center"
                   }
                 >
-                  <p className={"text-2xl font-bold"}>PIN: {upload.id}</p>
+                  <button
+                    type={"button"}
+                    className={"cursor-pointer text-left text-2xl font-bold"}
+                    aria-label={"Copy PIN"}
+                    onClick={() => copyCode(upload.id)}
+                  >
+                    PIN: {upload.id.substring(0, 3)}-{upload.id.substring(3)}
+                  </button>
                   <p className={"text-xs"}>
                     Expires in {formatRemaining(remainingMs(upload, now))}
                   </p>
