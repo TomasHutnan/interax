@@ -328,9 +328,19 @@ def infer_substance_from_path(file_path: Path) -> str:
     return folder.split(" and ")[-1].strip().title()[:100]
 
 
+def _is_bibliography_chunk(text: str) -> bool:
+    """Return True if a PDF text segment looks like a bibliography / citation list rather than clinical prose."""
+    et_al_count = len(re.findall(r"\bet\s+al\.", text, flags=re.IGNORECASE))
+    year_parens = len(re.findall(r"\((?:19|20)\d{2}\)", text))
+    numbered_refs = len(re.findall(r"(?:^|\s)\(?\d{1,3}\)?[\.\)]\s+[A-Z][a-z]+,\s+[A-Z]", text))
+    if et_al_count >= 3 or (et_al_count >= 2 and year_parens >= 3) or numbered_refs >= 3 or year_parens >= 5:
+        return True
+    return False
+
+
 def extract_cpic_chunks() -> list[dict]:
     """Extract natural language chunks from CPIC Excel tables and PDF guidelines."""
-    print("-> Extracting CPIC Excel tables and PDF guideline chunks...")
+    print("-> Extracting CPIC Excel tables and PDF guideline chunks (excluding bibliography/references)...")
     chunks: list[dict] = []
 
     # 1. Process all Excel (.xlsx) recommendation & alert tables
@@ -341,6 +351,8 @@ def extract_cpic_chunks() -> list[dict]:
         try:
             wb = openpyxl.load_workbook(xfile, read_only=True, data_only=True)
             for sheet_name in wb.sheetnames:
+                if "change" in sheet_name.lower() or "history" in sheet_name.lower():
+                    continue
                 ws = wb[sheet_name]
                 rows = list(ws.iter_rows(values_only=True))
                 if not rows:
@@ -349,6 +361,8 @@ def extract_cpic_chunks() -> list[dict]:
                     str(h).strip() if h is not None else f"Col{i}"
                     for i, h in enumerate(rows[0])
                 ]
+                if headers and headers[0].lower() in ("date", "version"):
+                    continue
                 for row in rows[1:]:
                     pairs = []
                     for h, val in zip(headers, row):
@@ -403,13 +417,19 @@ def extract_cpic_chunks() -> list[dict]:
                 if t:
                     full_text.append(t)
             joined = " ".join(full_text)
+            ref_match = re.search(
+                r"\b(?:REFERENCES|References|LITERATURE CITED)\b",
+                joined[len(joined) // 2 :],
+            )
+            if ref_match:
+                joined = joined[: len(joined) // 2 + ref_match.start()]
             words = joined.split(" ")
             # ~300 words (~400 tokens) with 40 words (~50 tokens) overlap
             step = 260
             window = 300
             for i in range(0, len(words), step):
                 segment = " ".join(words[i : i + window]).strip()
-                if len(segment) < 80:
+                if len(segment) < 80 or _is_bibliography_chunk(segment):
                     continue
                 # Tag chunk with primary substance (or matching substance mentioned in chunk)
                 matched_subs = [s for s in substances if s.lower() in segment.lower()]

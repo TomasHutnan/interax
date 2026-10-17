@@ -235,44 +235,64 @@ class ClinicalIRISPipeline:
 
     # ------------------------------------------------------------------
     # 3. Guideline Semantic Retrieval (Native IRIS VECTOR_DOT_PRODUCT)
+    #    Retrieves Top 2 chunks per substance if <=3 substances, or Top 1 per substance if >3
     # ------------------------------------------------------------------
     def retrieve_cpic_guidelines(
         self,
         substances: list[str],
         ddi_hits: list[DeterministicDDI],
-        top_k: int = 3,
+        top_k: int | None = None,
     ) -> list[CpicGuidelineHit]:
         if not substances:
             return []
 
-        base_subs = [s.split()[0].title() for s in substances if s]
+        base_subs = []
+        for s in substances:
+            if s:
+                canon = s.split()[0].title()
+                if canon not in base_subs:
+                    base_subs.append(canon)
+
+        per_sub_k = 1 if len(base_subs) > 3 else 2
+
         mech_context = "; ".join(d.mechanism_text for d in ddi_hits)
         query_text = (
-            f"Pharmacogenomic pathway and drug interaction mechanism for "
+            f"Pharmacogenomic pathway, enzyme inhibition, and drug interaction mechanism for "
             f"{', '.join(base_subs)}. {mech_context}"
         )
         emb = self.embedder.encode([query_text], normalize_embeddings=True)[0]
         vec_str = ",".join(f"{float(x):.6f}" for x in emb)
 
         cur = self.conn.cursor()
-        placeholders = ", ".join(["LOWER(?)" for _ in base_subs])
+        hits: list[CpicGuidelineHit] = []
 
-        cur.execute(
-            f"""
-            SELECT TOP {int(top_k)} SubstanceName, SourceFile, ChunkContent,
-                   VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?, DOUBLE, 384)) AS Score
-            FROM ClinicalKnowledge.CpicVectors
-            WHERE LOWER(SubstanceName) IN ({placeholders})
-            ORDER BY Score DESC
-            """,
-            [vec_str, *base_subs],
-        )
-        rows = [tuple(r) for r in cur.fetchall()]
-
-        if not rows:
+        for sub in base_subs:
             cur.execute(
                 f"""
-                SELECT TOP {int(top_k)} SubstanceName, SourceFile, ChunkContent,
+                SELECT TOP {per_sub_k} SubstanceName, SourceFile, ChunkContent,
+                       VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?, DOUBLE, 384)) AS Score
+                FROM ClinicalKnowledge.CpicVectors
+                WHERE LOWER(SubstanceName) = LOWER(?)
+                ORDER BY Score DESC
+                """,
+                [vec_str, sub],
+            )
+            rows = [tuple(r) for r in cur.fetchall()]
+            for r in rows:
+                hits.append(
+                    CpicGuidelineHit(
+                        substance_name=r[0],
+                        source_file=r[1],
+                        chunk_content=r[2],
+                        score=float(r[3]),
+                    )
+                )
+
+        if not hits:
+            fallback_k = top_k or 3
+            cur.execute(
+                f"""
+                SELECT TOP {int(fallback_k)} SubstanceName, SourceFile, ChunkContent,
                        VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?, DOUBLE, 384)) AS Score
                 FROM ClinicalKnowledge.CpicVectors
                 ORDER BY Score DESC
@@ -280,17 +300,18 @@ class ClinicalIRISPipeline:
                 [vec_str],
             )
             rows = [tuple(r) for r in cur.fetchall()]
+            for r in rows:
+                hits.append(
+                    CpicGuidelineHit(
+                        substance_name=r[0],
+                        source_file=r[1],
+                        chunk_content=r[2],
+                        score=float(r[3]),
+                    )
+                )
 
         cur.close()
-        return [
-            CpicGuidelineHit(
-                substance_name=r[0],
-                source_file=r[1],
-                chunk_content=r[2],
-                score=float(r[3]),
-            )
-            for r in rows
-        ]
+        return hits
 
     # ------------------------------------------------------------------
     # 4. Context-Aware LLM Adjudication via Azure APIM
