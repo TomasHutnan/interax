@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { KeyRound, Pencil, Plus, Trash2, Undo2 } from "lucide-react";
 import { useForms, useUploads } from "@/lib/hooks/use-forms";
 import { useNow } from "@/lib/hooks/use-now";
@@ -19,6 +20,7 @@ import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
 
 export default function PatientFormList() {
+  const t = useTranslations("patient.list");
   const router = useRouter();
   const forms = useForms();
   const uploads = useUploads();
@@ -50,7 +52,7 @@ export default function PatientFormList() {
   }
 
   function remove(id: string) {
-    if (!window.confirm("Delete this form?")) return;
+    if (!window.confirm(t("confirmDelete"))) return;
 
     // do not leave a valid code behind for a form that no longer exists
     const upload = uploads?.[id];
@@ -58,8 +60,18 @@ export default function PatientFormList() {
 
     if (deleteForm(id)) {
       deleteUpload(id);
-      toast.add({ type: "info", title: "Form deleted." });
-    } else toast.add({ type: "error", title: "Could not delete the form." });
+      toast.add({ type: "info", title: t("toasts.deleted") });
+    } else toast.add({ type: "error", title: t("toasts.deleteFailed") });
+  }
+
+  function copyCode(code: string) {
+    // the clipboard is unavailable outside secure contexts
+    Promise.resolve()
+      .then(() => navigator.clipboard.writeText(code))
+      .then(() => toast.add({ type: "success", title: t("toasts.pinCopied") }))
+      .catch(() =>
+        toast.add({ type: "error", title: t("toasts.pinCopyFailed") }),
+      );
   }
 
   function getCode(id: string) {
@@ -69,8 +81,8 @@ export default function PatientFormList() {
     try {
       toast
         .promise(uploadForm(forms![id]), {
-          loading: "Generating code...",
-          success: "Code created.",
+          loading: t("toasts.generating"),
+          success: t("toasts.codeCreated"),
           error: (err) =>
             getErrorMessage(
               err instanceof Error ? err : new Error(String(err)),
@@ -80,7 +92,7 @@ export default function PatientFormList() {
           if (!saveUpload(id, upload))
             toast.add({
               type: "warning",
-              title: "The code could not be saved on this device.",
+              title: t("toasts.codeNotSaved"),
             });
         })
         .catch(() => {})
@@ -97,8 +109,8 @@ export default function PatientFormList() {
     try {
       toast
         .promise(revokeUpload(upload), {
-          loading: "Revoking code...",
-          success: "Code revoked.",
+          loading: t("toasts.revoking"),
+          success: t("toasts.revoked"),
           error: (err) =>
             getErrorMessage(
               err instanceof Error ? err : new Error(String(err)),
@@ -115,18 +127,16 @@ export default function PatientFormList() {
   }
 
   return (
-    <div className={"space-y-4"}>
+    <div className={"space-y-4 border border-border surface p-4 shadow-md"}>
       <div className={"flex items-center justify-between gap-2"}>
-        <h1 className={"text-base font-bold"}>Your forms</h1>
+        <h1 className={"text-base font-bold"}>{t("title")}</h1>
         <Button type={"button"} size={"lg"} onClick={create}>
           <Plus />
-          Create new
+          {t("create")}
         </Button>
       </div>
       {ids.length === 0 && (
-        <p className={"py-8 text-center text-muted-foreground"}>
-          You have no forms yet.
-        </p>
+        <p className={"py-8 text-center text-muted-foreground"}>{t("empty")}</p>
       )}
       <ul className={"space-y-3"}>
         {ids.map((id, index) => {
@@ -146,9 +156,20 @@ export default function PatientFormList() {
                     "-mt-4 -mx-4 flex items-center justify-between space-y-1 bg-green-500/50 px-4 py-2 text-center"
                   }
                 >
-                  <p className={"text-2xl font-bold"}>PIN: {upload.id}</p>
+                  <button
+                    type={"button"}
+                    className={"cursor-pointer text-left text-2xl font-bold"}
+                    aria-label={t("copyPin")}
+                    onClick={() => copyCode(upload.id)}
+                  >
+                    {t("pin", {
+                      code: `${upload.id.substring(0, 3)}-${upload.id.substring(3)}`,
+                    })}
+                  </button>
                   <p className={"text-xs"}>
-                    Expires in {formatRemaining(remainingMs(upload, now))}
+                    {t("expiresIn", {
+                      time: formatRemaining(remainingMs(upload, now)),
+                    })}
                   </p>
                 </div>
               )}
@@ -161,7 +182,7 @@ export default function PatientFormList() {
                   onClick={() => router.push(`/patient/view?id=${id}`)}
                 >
                   <Pencil />
-                  Edit
+                  {t("edit")}
                 </Button>
                 <Button
                   type={"button"}
@@ -170,7 +191,7 @@ export default function PatientFormList() {
                   onClick={() => remove(id)}
                 >
                   <Trash2 />
-                  Delete
+                  {t("delete")}
                 </Button>
                 {active ? (
                   <Button
@@ -182,7 +203,7 @@ export default function PatientFormList() {
                     onClick={() => revoke(id, upload)}
                   >
                     <Undo2 />
-                    Revoke code
+                    {t("revoke")}
                   </Button>
                 ) : (
                   index === 0 && (
@@ -194,7 +215,7 @@ export default function PatientFormList() {
                       onClick={() => getCode(id)}
                     >
                       <KeyRound />
-                      Get code
+                      {t("getCode")}
                     </Button>
                   )
                 )}
@@ -208,6 +229,7 @@ export default function PatientFormList() {
 }
 
 function FormSummary({ id, form }: { id: string; form: PatientForm }) {
+  const t = useTranslations("patient.list");
   const drugs = form.prescriptions.map((p) => p.drug.trim()).filter(Boolean);
 
   return (
@@ -216,10 +238,10 @@ function FormSummary({ id, form }: { id: string; form: PatientForm }) {
         {new Date(Number(id)).toLocaleString()}
       </p>
       <p className={"text-base font-bold break-words"}>
-        {form.treatment.name.trim() || "No regimen"}
+        {form.treatment.name.trim() || t("noRegimen")}
       </p>
       <p className={"break-words"}>
-        {drugs.length > 0 ? drugs.join(", ") : "No prescriptions"}
+        {drugs.length > 0 ? drugs.join(", ") : t("noPrescriptions")}
       </p>
     </div>
   );

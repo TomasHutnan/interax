@@ -47,7 +47,7 @@ PROMPT = (
     'evening), e.g. "jednu ráno a jednu večer" -> "1-0-1", "půl ráno" -> "1/2-0-0".\n'
     '  2. "á n dní" / "á n dny": one piece every n days, e.g. "ob den" -> "á 2 dny", '
     '"jednou týdně" -> "á 7 dní".\n'
-    '  3. "k*": k times a day with no set time, e.g. "třikrát denně" -> "3*".\n'
+    '  3. "kx": k times a day with no set time, e.g. "třikrát denně" -> "3x".\n'
     '  If the timing is not said or fits none of these, use "". Do not guess.\n'
     'Respond with ONLY valid JSON, no commentary: {"medications":[{"name":"string","usage":"string"}]}\n\n'
     "Transcript:\n"

@@ -1,0 +1,58 @@
+{
+  "en": {
+    "user": {
+      "notLoggedIn": "Not logged in",
+      "loggedInAs": "Logged in as {username}"
+    },
+    "logout": {
+      "button": "Logout",
+      "success": "Logged out successfully."
+    },
+    "ui": {
+      "loading": "Loading",
+      "closeToast": "Close toast"
+    }
+  },
+  "cs": {
+    "user": {
+      "notLoggedIn": "Nejste přihlášeni",
+      "loggedInAs": "Přihlášený uživatel: {username}"
+    },
+    "logout": {
+      "button": "Odhlásit se",
+      "success": "Odhlášení proběhlo úspěšně."
+    },
+    "ui": {
+      "loading": "Načítání",
+      "closeToast": "Zavřít oznámení"
+    }
+  },
+  "sk": {
+    "user": {
+      "notLoggedIn": "Nie ste prihlásení",
+      "loggedInAs": "Prihlásený používateľ: {username}"
+    },
+    "logout": {
+      "button": "Odhlásiť sa",
+      "success": "Odhlásenie prebehlo úspešne."
+    },
+    "ui": {
+      "loading": "Načítava sa",
+      "closeToast": "Zavrieť oznámenie"
+    }
+  },
+  "uk": {
+    "user": {
+      "notLoggedIn": "Ви не ввійшли",
+      "loggedInAs": "Ви ввійшли як {username}"
+    },
+    "logout": {
+      "button": "Вийти",
+      "success": "Ви успішно вийшли з системи."
+    },
+    "ui": {
+      "loading": "Завантаження",
+      "closeToast": "Закрити сповіщення"
+    }
+  }
+}

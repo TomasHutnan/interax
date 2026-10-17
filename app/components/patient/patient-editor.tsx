@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Camera, Check, Mic, Plus, Trash2, X } from "lucide-react";
 import { PatientForm, Prescription } from "@/lib/typings";
 import { saveForm } from "@/lib/storage";
@@ -14,6 +15,7 @@ import { scanMeds } from "@/lib/scan";
 import { dictateMeds } from "@/lib/dictate";
 import { useRecorder } from "@/lib/hooks/use-recorder";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
+import { tr } from "@/lib/i18n";
 import { Button } from "../ui/button";
 import { toast } from "../ui/toast";
 import RegimenInput from "../form/regimen-input";
@@ -23,14 +25,14 @@ const MIN_DICTATION_MS = 500;
 function micErrorMessage(err: unknown): string {
   const name = err instanceof DOMException ? err.name : "";
   if (name === "NotAllowedError" || name === "SecurityError")
-    return "Microphone access was denied.";
+    return tr("patient.editor.mic.denied");
   if (name === "NotFoundError" || name === "OverconstrainedError")
-    return "No microphone found.";
-  return "Could not start recording.";
+    return tr("patient.editor.mic.notFound");
+  return tr("patient.editor.mic.failed");
 }
 
 const INPUT_CLASS =
-  "w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full rounded-md border border-input bg-background px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default function PatientEditor({
   id,
@@ -39,6 +41,7 @@ export default function PatientEditor({
   id: string;
   initial: PatientForm;
 }) {
+  const t = useTranslations("patient.editor");
   const router = useRouter();
   const [form, setForm] = useState<PatientForm>(initial);
   const [busy, setBusy] = useState(false);
@@ -82,8 +85,8 @@ export default function PatientEditor({
     try {
       toast
         .promise(scanMeds(form.prescriptions, file), {
-          loading: "Reading photo...",
-          success: "Medications updated from photo.",
+          loading: t("toasts.readingPhoto"),
+          success: t("toasts.scanned"),
           error: (err) =>
             getErrorMessage(
               err instanceof Error ? err : new Error(String(err)),
@@ -115,7 +118,7 @@ export default function PatientEditor({
       .then((result) => {
         if (!result) return;
         if (result.durationMs < MIN_DICTATION_MS) {
-          toast.add({ type: "info", title: "Hold the button while speaking." });
+          toast.add({ type: "info", title: t("toasts.holdWhileSpeaking") });
           return;
         }
 
@@ -123,8 +126,8 @@ export default function PatientEditor({
         try {
           toast
             .promise(dictateMeds(form.prescriptions, result.wav), {
-              loading: "Transcribing recording...",
-              success: "Medications updated from dictation.",
+              loading: t("toasts.transcribing"),
+              success: t("toasts.dictated"),
               error: (err) =>
                 getErrorMessage(
                   err instanceof Error ? err : new Error(String(err)),
@@ -168,19 +171,19 @@ export default function PatientEditor({
     };
 
     if (!saveForm(id, cleaned)) {
-      toast.add({ type: "error", title: "Could not save the form." });
+      toast.add({ type: "error", title: t("toasts.saveFailed") });
       return;
     }
 
     router.push("/patient");
-    toast.add({ type: "success", title: "Form saved." });
+    toast.add({ type: "success", title: t("toasts.saved") });
   }
 
   return (
-    <div className={"space-y-4"}>
+    <div className={"space-y-4 border border-border surface p-4 shadow-md"}>
       <section className={"space-y-2"}>
         <div className={"flex flex-wrap items-center justify-between gap-2"}>
-          <h2 className={"font-bold"}>Prescriptions:</h2>
+          <h2 className={"font-bold"}>{t("prescriptions")}</h2>
           <div className={"flex flex-wrap gap-2"}>
             <Button
               type={"button"}
@@ -190,7 +193,7 @@ export default function PatientEditor({
               onClick={() => fileInput.current?.click()}
             >
               <Camera />
-              {busy ? "Processing..." : "Scan"}
+              {busy ? t("processing") : t("scan")}
             </Button>
             {recorder.supported && (
               <Button
@@ -209,7 +212,7 @@ export default function PatientEditor({
                 onContextMenu={(e) => e.preventDefault()}
               >
                 <Mic />
-                {recorder.recording ? "Recording..." : "Hold to speak"}
+                {recorder.recording ? t("recording") : t("holdToSpeak")}
               </Button>
             )}
             <Button
@@ -220,7 +223,7 @@ export default function PatientEditor({
               onClick={addPrescription}
             >
               <Plus />
-              Add manually
+              {t("addManually")}
             </Button>
           </div>
           <input
@@ -233,7 +236,7 @@ export default function PatientEditor({
         </div>
         {form.prescriptions.length === 0 && (
           <p className={"py-4 text-center text-muted-foreground"}>
-            No prescriptions added.
+            {t("empty")}
           </p>
         )}
         <div className={"space-y-4"}>
@@ -245,7 +248,7 @@ export default function PatientEditor({
               }
             >
               <label className={"block space-y-2"}>
-                <span className={"font-medium"}>Drug</span>
+                <span className={"font-medium"}>{t("drug")}</span>
                 <input
                   type={"text"}
                   className={INPUT_CLASS}
@@ -256,11 +259,11 @@ export default function PatientEditor({
                 />
               </label>
               <label className={"block space-y-2"}>
-                <span className={"font-medium"}>Dosing</span>
+                <span className={"font-medium"}>{t("dosing")}</span>
                 <input
                   type={"text"}
                   className={INPUT_CLASS}
-                  placeholder={"e.g. 1-0-1-0"}
+                  placeholder={t("dosingPlaceholder")}
                   value={p.usage}
                   onChange={(e) =>
                     updatePrescription(i, { usage: e.target.value })
@@ -275,14 +278,14 @@ export default function PatientEditor({
                 onClick={() => removePrescription(i)}
               >
                 <Trash2 />
-                Remove
+                {t("remove")}
               </Button>
             </div>
           ))}
         </div>
       </section>
       <section className={"space-y-2"}>
-        <h2 className={"font-bold"}>Regimen:</h2>
+        <h2 className={"font-bold"}>{t("regimen")}</h2>
         <RegimenInput
           value={form.treatment.name}
           onChange={(name) =>
@@ -298,7 +301,7 @@ export default function PatientEditor({
           onClick={() => router.push("/patient")}
         >
           <X />
-          Cancel
+          {t("cancel")}
         </Button>
         <Button
           type={"button"}
@@ -307,7 +310,7 @@ export default function PatientEditor({
           onClick={save}
         >
           <Check />
-          Save
+          {t("save")}
         </Button>
       </div>
     </div>

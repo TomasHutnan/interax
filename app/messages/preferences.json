@@ -1,0 +1,54 @@
+{
+  "en": {
+    "language": "Language",
+    "theme": "Theme",
+    "toLight": "Switch to light mode",
+    "toDark": "Switch to dark mode",
+    "background": "Background",
+    "backgrounds": {
+      "ecg": "ECG paper",
+      "lines": "Lines",
+      "waves": "Waves",
+      "plain": "Plain"
+    }
+  },
+  "cs": {
+    "language": "Jazyk",
+    "theme": "Motiv",
+    "toLight": "Přepnout na světlý režim",
+    "toDark": "Přepnout na tmavý režim",
+    "background": "Pozadí",
+    "backgrounds": {
+      "ecg": "EKG papír",
+      "lines": "Linky",
+      "waves": "Vlny",
+      "plain": "Bez pozadí"
+    }
+  },
+  "sk": {
+    "language": "Jazyk",
+    "theme": "Motív",
+    "toLight": "Prepnúť na svetlý režim",
+    "toDark": "Prepnúť na tmavý režim",
+    "background": "Pozadie",
+    "backgrounds": {
+      "ecg": "EKG papier",
+      "lines": "Čiary",
+      "waves": "Vlny",
+      "plain": "Bez pozadia"
+    }
+  },
+  "uk": {
+    "language": "Мова",
+    "theme": "Тема",
+    "toLight": "Увімкнути світлу тему",
+    "toDark": "Увімкнути темну тему",
+    "background": "Фон",
+    "backgrounds": {
+      "ecg": "ЕКГ-папір",
+      "lines": "Лінії",
+      "waves": "Хвилі",
+      "plain": "Без фону"
+    }
+  }
+}

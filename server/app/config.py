@@ -27,6 +27,7 @@ class Settings:
     session_cookie_secure: bool
     bootstrap_admin_username: str | None
     bootstrap_admin_password: str | None
+    seed_dev_users: bool
 
 
 def _require(name: str) -> str:
@@ -80,4 +81,7 @@ settings = Settings(
     # the (volume-less) Azure database restarted. Both must be set to take effect.
     bootstrap_admin_username=os.getenv("BOOTSTRAP_ADMIN_USERNAME") or None,
     bootstrap_admin_password=os.getenv("BOOTSTRAP_ADMIN_PASSWORD") or None,
+    # Dev phase only: (re)creates the demo clinician in app.users.DEV_USERS whenever
+    # it's missing. Set SEED_DEV_USERS=false before going to production.
+    seed_dev_users=_bool("SEED_DEV_USERS", True),
 )

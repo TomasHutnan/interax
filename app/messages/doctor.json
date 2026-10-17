@@ -1,0 +1,294 @@
+{
+  "en": {
+    "form": {
+      "sessionClosed": "Session closed",
+      "reset": "Form reset."
+    },
+    "view": {
+      "notFound": "No form found for this code.",
+      "error": "Error: {message}"
+    },
+    "controls": {
+      "showInteractions": "See interactions",
+      "hideInteractions": "Hide interactions",
+      "reset": "Reset",
+      "finish": "Finish viewing",
+      "copy": {
+        "button": "Copy as text",
+        "verbose": "Verbose (multiline)",
+        "compact": "Compact (oneline)",
+        "loading": "Copying...",
+        "success": "Copied to clipboard ({style})",
+        "error": "This did not work out ({message})",
+        "styles": {
+          "verbose": "verbose",
+          "compact": "compact"
+        }
+      }
+    },
+    "prescriptions": {
+      "title": "Prescriptions:",
+      "add": "Add prescription",
+      "delete": "Delete prescription",
+      "drugPlaceholder": "Drug name",
+      "withDosing": "with dosing",
+      "of": "of",
+      "substancesPlaceholder": "Substance A / B",
+      "autoFill": "Auto-fill",
+      "filling": "Filling",
+      "notFound": "No drug found for that name."
+    },
+    "treatment": {
+      "title": "Regimen:",
+      "applyComponents": "Apply components",
+      "addSubstance": "Add substance",
+      "addComponent": "Add component",
+      "deleteSubstance": "Delete substance",
+      "substancePlaceholder": "Substance 50mg",
+      "withDosing": "with dosing"
+    },
+    "finish": {
+      "title": "Send to repository?",
+      "description": "Before closing, you can send this patient's {count, plural, one {# medication} other {# medications}} and the interactions you observed to the FHIR repository. No personal data is sent.",
+      "atOrAbove": "Interactions at or above <badge></badge>:",
+      "incomplete": "Interactions can't be checked because some substances are missing. Only the medications will be sent.",
+      "checking": "Checking interactions...",
+      "error": "Could not check interactions. Only the medications will be sent.",
+      "none": "None.",
+      "back": "Back to review",
+      "finishWithoutSending": "Finish without sending",
+      "sendAndFinish": "Send and finish",
+      "sending": "Sending...",
+      "toast": {
+        "loading": "Sending to repository...",
+        "success": "Sent to repository.",
+        "rejected": "The repository did not accept the data. Try again later.",
+        "notConfigured": "The repository is not configured."
+      }
+    },
+    "otp": {
+      "title": "Input patient PIN code to continue:",
+      "checking": "Checking...",
+      "continue": "Continue"
+    }
+  },
+  "cs": {
+    "form": {
+      "sessionClosed": "Relace ukončena",
+      "reset": "Formulář byl vrácen do původního stavu."
+    },
+    "view": {
+      "notFound": "Pro tento kód nebyl nalezen žádný formulář.",
+      "error": "Chyba: {message}"
+    },
+    "controls": {
+      "showInteractions": "Zobrazit interakce",
+      "hideInteractions": "Skrýt interakce",
+      "reset": "Obnovit",
+      "finish": "Ukončit prohlížení",
+      "copy": {
+        "button": "Kopírovat jako text",
+        "verbose": "Podrobně (více řádků)",
+        "compact": "Stručně (jeden řádek)",
+        "loading": "Kopírování...",
+        "success": "Zkopírováno do schránky ({style})",
+        "error": "Kopírování se nezdařilo ({message})",
+        "styles": {
+          "verbose": "podrobně",
+          "compact": "stručně"
+        }
+      }
+    },
+    "prescriptions": {
+      "title": "Předepsané léky:",
+      "add": "Přidat lék",
+      "delete": "Odstranit lék",
+      "drugPlaceholder": "Název léku",
+      "withDosing": "s dávkováním",
+      "of": "obsahuje",
+      "substancesPlaceholder": "Látka A / B",
+      "autoFill": "Doplnit automaticky",
+      "filling": "Doplňování",
+      "notFound": "Lék s tímto názvem nebyl nalezen."
+    },
+    "treatment": {
+      "title": "Léčebný režim:",
+      "applyComponents": "Použít složky režimu",
+      "addSubstance": "Přidat látku",
+      "addComponent": "Přidat složku",
+      "deleteSubstance": "Odstranit látku",
+      "substancePlaceholder": "Látka 50 mg",
+      "withDosing": "s dávkováním"
+    },
+    "finish": {
+      "title": "Odeslat do repozitáře?",
+      "description": "Před zavřením můžete do repozitáře FHIR odeslat {count, plural, one {# lék} few {# léky} many {# léku} other {# léků}} tohoto pacienta a zjištěné interakce. Neodesílají se žádné osobní údaje.",
+      "atOrAbove": "Interakce se závažností <badge></badge> a vyšší:",
+      "incomplete": "Interakce nelze zkontrolovat, protože chybí některé léčivé látky. Odeslány budou pouze léky.",
+      "checking": "Kontrola interakcí...",
+      "error": "Interakce se nepodařilo zkontrolovat. Odeslány budou pouze léky.",
+      "none": "Žádné.",
+      "back": "Zpět ke kontrole",
+      "finishWithoutSending": "Ukončit bez odeslání",
+      "sendAndFinish": "Odeslat a ukončit",
+      "sending": "Odesílání...",
+      "toast": {
+        "loading": "Odesílání do repozitáře...",
+        "success": "Odesláno do repozitáře.",
+        "rejected": "Repozitář data nepřijal. Zkuste to prosím později.",
+        "notConfigured": "Repozitář není nakonfigurován."
+      }
+    },
+    "otp": {
+      "title": "Pro pokračování zadejte PIN kód pacienta:",
+      "checking": "Ověřování...",
+      "continue": "Pokračovat"
+    }
+  },
+  "sk": {
+    "form": {
+      "sessionClosed": "Relácia ukončená",
+      "reset": "Formulár bol vrátený do pôvodného stavu."
+    },
+    "view": {
+      "notFound": "Pre tento kód sa nenašiel žiadny formulár.",
+      "error": "Chyba: {message}"
+    },
+    "controls": {
+      "showInteractions": "Zobraziť interakcie",
+      "hideInteractions": "Skryť interakcie",
+      "reset": "Obnoviť",
+      "finish": "Ukončiť prezeranie",
+      "copy": {
+        "button": "Kopírovať ako text",
+        "verbose": "Podrobne (viac riadkov)",
+        "compact": "Stručne (jeden riadok)",
+        "loading": "Kopírovanie...",
+        "success": "Skopírované do schránky ({style})",
+        "error": "Kopírovanie sa nepodarilo ({message})",
+        "styles": {
+          "verbose": "podrobne",
+          "compact": "stručne"
+        }
+      }
+    },
+    "prescriptions": {
+      "title": "Predpísané lieky:",
+      "add": "Pridať liek",
+      "delete": "Odstrániť liek",
+      "drugPlaceholder": "Názov lieku",
+      "withDosing": "s dávkovaním",
+      "of": "obsahuje",
+      "substancesPlaceholder": "Látka A / B",
+      "autoFill": "Doplniť automaticky",
+      "filling": "Dopĺňanie",
+      "notFound": "Liek s týmto názvom sa nenašiel."
+    },
+    "treatment": {
+      "title": "Liečebný režim:",
+      "applyComponents": "Použiť zložky režimu",
+      "addSubstance": "Pridať látku",
+      "addComponent": "Pridať zložku",
+      "deleteSubstance": "Odstrániť látku",
+      "substancePlaceholder": "Látka 50 mg",
+      "withDosing": "s dávkovaním"
+    },
+    "finish": {
+      "title": "Odoslať do repozitára?",
+      "description": "Pred zatvorením môžete do repozitára FHIR odoslať {count, plural, one {# liek} few {# lieky} many {# lieku} other {# liekov}} tohto pacienta a zistené interakcie. Neodosielajú sa žiadne osobné údaje.",
+      "atOrAbove": "Interakcie so závažnosťou <badge></badge> a vyššou:",
+      "incomplete": "Interakcie nemožno skontrolovať, pretože chýbajú niektoré liečivé látky. Odoslané budú iba lieky.",
+      "checking": "Kontrola interakcií...",
+      "error": "Interakcie sa nepodarilo skontrolovať. Odoslané budú iba lieky.",
+      "none": "Žiadne.",
+      "back": "Späť na kontrolu",
+      "finishWithoutSending": "Ukončiť bez odoslania",
+      "sendAndFinish": "Odoslať a ukončiť",
+      "sending": "Odosielanie...",
+      "toast": {
+        "loading": "Odosielanie do repozitára...",
+        "success": "Odoslané do repozitára.",
+        "rejected": "Repozitár údaje neprijal. Skúste to neskôr.",
+        "notConfigured": "Repozitár nie je nakonfigurovaný."
+      }
+    },
+    "otp": {
+      "title": "Pre pokračovanie zadajte PIN kód pacienta:",
+      "checking": "Overovanie...",
+      "continue": "Pokračovať"
+    }
+  },
+  "uk": {
+    "form": {
+      "sessionClosed": "Сеанс завершено",
+      "reset": "Форму повернуто до початкового стану."
+    },
+    "view": {
+      "notFound": "Для цього коду форму не знайдено.",
+      "error": "Помилка: {message}"
+    },
+    "controls": {
+      "showInteractions": "Показати взаємодії",
+      "hideInteractions": "Сховати взаємодії",
+      "reset": "Скинути",
+      "finish": "Завершити перегляд",
+      "copy": {
+        "button": "Копіювати як текст",
+        "verbose": "Детально (кілька рядків)",
+        "compact": "Стисло (один рядок)",
+        "loading": "Копіювання...",
+        "success": "Скопійовано в буфер обміну ({style})",
+        "error": "Не вдалося скопіювати ({message})",
+        "styles": {
+          "verbose": "детально",
+          "compact": "стисло"
+        }
+      }
+    },
+    "prescriptions": {
+      "title": "Призначені препарати:",
+      "add": "Додати препарат",
+      "delete": "Видалити препарат",
+      "drugPlaceholder": "Назва препарату",
+      "withDosing": "з дозуванням",
+      "of": "містить",
+      "substancesPlaceholder": "Речовина A / B",
+      "autoFill": "Автозаповнення",
+      "filling": "Заповнення",
+      "notFound": "Препарат із такою назвою не знайдено."
+    },
+    "treatment": {
+      "title": "Схема лікування:",
+      "applyComponents": "Застосувати компоненти схеми",
+      "addSubstance": "Додати речовину",
+      "addComponent": "Додати компонент",
+      "deleteSubstance": "Видалити речовину",
+      "substancePlaceholder": "Речовина 50 мг",
+      "withDosing": "з дозуванням"
+    },
+    "finish": {
+      "title": "Надіслати до репозиторію?",
+      "description": "Перед закриттям ви можете надіслати до репозиторію FHIR {count, plural, one {# препарат} few {# препарати} many {# препаратів} other {# препарату}} цього пацієнта та виявлені взаємодії. Персональні дані не надсилаються.",
+      "atOrAbove": "Взаємодії з тяжкістю <badge></badge> і вище:",
+      "incomplete": "Неможливо перевірити взаємодії, оскільки бракує деяких діючих речовин. Буде надіслано лише препарати.",
+      "checking": "Перевірка взаємодій...",
+      "error": "Не вдалося перевірити взаємодії. Буде надіслано лише препарати.",
+      "none": "Немає.",
+      "back": "Повернутися до перегляду",
+      "finishWithoutSending": "Завершити без надсилання",
+      "sendAndFinish": "Надіслати й завершити",
+      "sending": "Надсилання...",
+      "toast": {
+        "loading": "Надсилання до репозиторію...",
+        "success": "Надіслано до репозиторію.",
+        "rejected": "Репозиторій не прийняв дані. Спробуйте пізніше.",
+        "notConfigured": "Репозиторій не налаштовано."
+      }
+    },
+    "otp": {
+      "title": "Введіть PIN-код пацієнта, щоб продовжити:",
+      "checking": "Перевірка...",
+      "continue": "Продовжити"
+    }
+  }
+}

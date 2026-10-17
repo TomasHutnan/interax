@@ -139,12 +139,13 @@ The server owns the tables in `migrations/` (applied automatically at startup, a
 every 30 s, so a recreated db is migrated again). If `BOOTSTRAP_ADMIN_USERNAME` and
 `BOOTSTRAP_ADMIN_PASSWORD` are set, that admin is created whenever the users table is empty.
 
-| Variable                                                | Used for                                                     |
-| ------------------------------------------------------- | ------------------------------------------------------------ |
-| `SESSION_TTL` / `SESSION_IDLE_TTL`                      | Session lifetime / idle timeout in seconds (43200 / 3600)    |
-| `SESSION_COOKIE_SECURE`                                 | `false` only for local plain-http development (default true) |
-| `BOOTSTRAP_ADMIN_USERNAME` / `BOOTSTRAP_ADMIN_PASSWORD` | Optional admin created when there are no users               |
-| `UPLOAD_TTL`                                            | Seconds an upload lives (default 3600)                       |
+| Variable                                                | Used for                                                                                                                                                             |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SESSION_TTL` / `SESSION_IDLE_TTL`                      | Session lifetime / idle timeout in seconds (43200 / 3600)                                                                                                            |
+| `SESSION_COOKIE_SECURE`                                 | `false` only for local plain-http development (default true)                                                                                                         |
+| `BOOTSTRAP_ADMIN_USERNAME` / `BOOTSTRAP_ADMIN_PASSWORD` | Optional admin created when there are no users                                                                                                                       |
+| `SEED_DEV_USERS`                                        | Dev phase: creates the demo clinician `mrnovak` / `abcdef123456` (`DEV_USERS` in `app/users.py`) whenever it's missing. Default true; **set `false` for production** |
+| `UPLOAD_TTL`                                            | Seconds an upload lives (default 3600)                                                                                                                               |
 
 ## `POST /api/scan`
 
@@ -176,11 +177,11 @@ The result is merged into `meds` and the updated list is returned:
 
 `usage` is normalized to one of these notations, or `""` if not written / not recognised:
 
-| Notation  | Meaning                                        |
-| --------- | ---------------------------------------------- |
-| `a-b-c`   | pieces in the morning, at noon, in the evening |
-| `k*`      | k times a day, no set time                     |
-| `á n dní` | one piece every n days                         |
+| Notation  | Meaning                                                 |
+| --------- | ------------------------------------------------------- |
+| `a-b-c`   | pieces in the morning, at noon, in the evening          |
+| `kx`      | k times a day, no set time (`k*` is normalized to `kx`) |
+| `á n dní` | one piece every n days                                  |
 
 ## `POST /api/dictate`
 

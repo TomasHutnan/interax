@@ -1,4 +1,5 @@
 import { baseFetcher, HttpError } from "@/lib/hooks/use-swr-fetch";
+import { tr } from "@/lib/i18n";
 import { isEmptyPrescription } from "@/lib/prescriptions";
 import { Prescription } from "@/lib/typings";
 
@@ -40,8 +41,7 @@ export function parsePrescription(data: unknown): Prescription {
 
 export function parseMeds(data: unknown): Prescription[] {
   const meds = (data as { meds?: unknown } | null)?.meds;
-  if (!Array.isArray(meds))
-    throw new Error("Unexpected response from the server");
+  if (!Array.isArray(meds)) throw new Error(tr("patient.scan.unexpected"));
 
   return meds.map(parsePrescription);
 }

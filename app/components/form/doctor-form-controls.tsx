@@ -10,6 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { toast } from "../ui/toast";
+import { useTranslations } from "next-intl";
 
 export default function DoctorFormControls({
   reset,
@@ -24,23 +25,24 @@ export default function DoctorFormControls({
   setOpen: Dispatch<SetStateAction<boolean>>;
   onFinish: () => void;
 }) {
+  const t = useTranslations("doctor.controls");
   return (
     <div className="w-full flex gap-2 justify-between">
       <div className="flex gap-2">
         <CopyButton state={state} />
         <Button onClick={() => setOpen((prev) => !prev)}>
           {!open ? <Eye /> : <EyeClosed />}
-          {!open ? "See interactions" : "Hide interactions"}
+          {!open ? t("showInteractions") : t("hideInteractions")}
         </Button>
       </div>
       <div className="flex gap-2">
         <Button onClick={reset}>
           <RotateCcw />
-          Reset
+          {t("reset")}
         </Button>
         <Button onClick={onFinish}>
           <Check />
-          Finish viewing
+          {t("finish")}
         </Button>
       </div>
     </div>
@@ -48,22 +50,23 @@ export default function DoctorFormControls({
 }
 
 function CopyButton({ state }: { state: MPatientForm }) {
+  const t = useTranslations("doctor.controls.copy");
   const copy = useCallback(
-    (style: string, fn: (f: MPatientForm) => string) => {
+    (style: "verbose" | "compact", fn: (f: MPatientForm) => string) => {
       toast.promise(navigator.clipboard.writeText(fn(state)), {
-        loading: "Copying...",
-        success: `Copied to clipboard (${style})`,
-        error: (e: Error) => `This did not work out (${e.message})`,
+        loading: t("loading"),
+        success: t("success", { style: t(`styles.${style}`) }),
+        error: (e: Error) => t("error", { message: e.message }),
       });
     },
-    [state],
+    [state, t],
   );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button />}>
         <Clipboard />
-        Copy as text
+        {t("button")}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup className={"space-y-0"}>
@@ -72,7 +75,7 @@ function CopyButton({ state }: { state: MPatientForm }) {
               variant={"ghost"}
               onClick={() => copy("verbose", formatVerbose)}
             >
-              Verbose (multiline)
+              {t("verbose")}
             </Button>
           </DropdownMenuItem>
           <DropdownMenuItem className={"p-0 m-0"}>
@@ -80,7 +83,7 @@ function CopyButton({ state }: { state: MPatientForm }) {
               variant={"ghost"}
               onClick={() => copy("compact", formatCompact)}
             >
-              Compact (oneline)
+              {t("compact")}
             </Button>
           </DropdownMenuItem>
         </DropdownMenuGroup>

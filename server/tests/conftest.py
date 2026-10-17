@@ -19,6 +19,7 @@ os.environ["DATABASE_URL"] = (
 os.environ["SESSION_COOKIE_SECURE"] = "false"
 os.environ["BOOTSTRAP_ADMIN_USERNAME"] = ""
 os.environ["BOOTSTRAP_ADMIN_PASSWORD"] = ""
+os.environ["SEED_DEV_USERS"] = "false"
 
 import pytest  # noqa: E402  (must come after the environment setup above)
 

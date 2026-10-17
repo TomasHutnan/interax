@@ -1,0 +1,50 @@
+{
+  "en": {
+    "form": {
+      "loading": "Looking up code...",
+      "success": "Patient form loaded.",
+      "notFound": "No patient form found for this code."
+    },
+    "regimen": {
+      "loading": "Loading regimen substances...",
+      "success": "Regimen substances loaded.",
+      "notFound": "Regimen not found."
+    }
+  },
+  "cs": {
+    "form": {
+      "loading": "Vyhledávání kódu...",
+      "success": "Formulář pacienta byl načten.",
+      "notFound": "K tomuto kódu nebyl nalezen žádný formulář pacienta."
+    },
+    "regimen": {
+      "loading": "Načítání látek léčebného režimu...",
+      "success": "Látky léčebného režimu byly načteny.",
+      "notFound": "Léčebný režim nebyl nalezen."
+    }
+  },
+  "sk": {
+    "form": {
+      "loading": "Vyhľadávanie kódu...",
+      "success": "Formulár pacienta bol načítaný.",
+      "notFound": "K tomuto kódu sa nenašiel žiadny formulár pacienta."
+    },
+    "regimen": {
+      "loading": "Načítavanie látok liečebného režimu...",
+      "success": "Látky liečebného režimu boli načítané.",
+      "notFound": "Liečebný režim sa nenašiel."
+    }
+  },
+  "uk": {
+    "form": {
+      "loading": "Пошук коду...",
+      "success": "Форму пацієнта завантажено.",
+      "notFound": "Для цього коду не знайдено форми пацієнта."
+    },
+    "regimen": {
+      "loading": "Завантаження речовин схеми лікування...",
+      "success": "Речовини схеми лікування завантажено.",
+      "notFound": "Схему лікування не знайдено."
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "en": {
+    "http": {
+      "badRequest": "Malformed request (E400).",
+      "unauthorized": "You are not logged in (E401).",
+      "forbidden": "You do not have permission to do that (E403).",
+      "notFound": "Not found (E404).",
+      "tooManyRequests": "Too many requests. Wait a moment and try again (E429).",
+      "serverError": "Server error occurred. Try again. (E500).",
+      "unavailable": "The service is temporarily unavailable. Try again shortly (E503).",
+      "other": "This did not work out ({message})."
+    },
+    "unknown": "This did not work out ({message})"
+  },
+  "cs": {
+    "http": {
+      "badRequest": "Neplatný požadavek (E400).",
+      "unauthorized": "Nejste přihlášeni (E401).",
+      "forbidden": "K této akci nemáte oprávnění (E403).",
+      "notFound": "Nenalezeno (E404).",
+      "tooManyRequests": "Příliš mnoho požadavků. Chvíli počkejte a zkuste to znovu (E429).",
+      "serverError": "Došlo k chybě serveru. Zkuste to znovu (E500).",
+      "unavailable": "Služba je dočasně nedostupná. Zkuste to za chvíli (E503).",
+      "other": "Nepodařilo se to ({message})."
+    },
+    "unknown": "Nepodařilo se to ({message})"
+  },
+  "sk": {
+    "http": {
+      "badRequest": "Neplatná požiadavka (E400).",
+      "unauthorized": "Nie ste prihlásení (E401).",
+      "forbidden": "Na túto akciu nemáte oprávnenie (E403).",
+      "notFound": "Nenájdené (E404).",
+      "tooManyRequests": "Príliš veľa požiadaviek. Chvíľu počkajte a skúste to znova (E429).",
+      "serverError": "Nastala chyba servera. Skúste to znova (E500).",
+      "unavailable": "Služba je dočasne nedostupná. Skúste to o chvíľu (E503).",
+      "other": "Nepodarilo sa to ({message})."
+    },
+    "unknown": "Nepodarilo sa to ({message})"
+  },
+  "uk": {
+    "http": {
+      "badRequest": "Некоректний запит (E400).",
+      "unauthorized": "Ви не ввійшли в систему (E401).",
+      "forbidden": "У вас немає дозволу на цю дію (E403).",
+      "notFound": "Не знайдено (E404).",
+      "tooManyRequests": "Забагато запитів. Зачекайте трохи й спробуйте ще раз (E429).",
+      "serverError": "Сталася помилка сервера. Спробуйте ще раз (E500).",
+      "unavailable": "Сервіс тимчасово недоступний. Спробуйте трохи згодом (E503).",
+      "other": "Не вдалося ({message})."
+    },
+    "unknown": "Не вдалося ({message})"
+  }
+}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Send, X } from "lucide-react";
 import { Interaction, MPatientForm } from "@/lib/typings";
 import { useGetInteractions } from "@/lib/hooks/bundles";
@@ -7,7 +8,6 @@ import {
   interactionInputs,
   meetsThreshold,
   Severity,
-  SEVERITY_LABELS,
   toRepoPayload,
   uploadToRepo,
 } from "@/lib/interactions";
@@ -21,7 +21,7 @@ import {
 } from "../ui/dialog";
 import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
-import { IntBadge } from "./interactions-panel";
+import { IntBadge, IntBadge0 } from "./interactions-panel";
 
 type Props = {
   open: boolean;
@@ -54,6 +54,8 @@ function Internal({
   onExit,
   onCancel,
 }: Omit<Props, "open" | "onOpenChange"> & { onCancel: () => void }) {
+  const t = useTranslations("doctor.finish");
+  const tInt = useTranslations("interactions");
   const inputs = useMemo(() => interactionInputs(state), [state]);
   const cached = known && known.key === inputs.key ? known.data : null;
   const { trigger, data: fetched, error } = useGetInteractions();
@@ -94,14 +96,14 @@ function Internal({
       .promise(
         uploadToRepo(toRepoPayload(state, inputs.substances, selected)),
         {
-          loading: "Sending to repository...",
-          success: "Sent to repository.",
+          loading: t("toast.loading"),
+          success: t("toast.success"),
           error: (err) =>
             getErrorMessage(
               err instanceof Error ? err : new Error(String(err)),
               {
-                502: "The repository did not accept the data. Try again later.",
-                503: "The repository is not configured.",
+                502: t("toast.rejected"),
+                503: t("toast.notConfigured"),
               },
             ),
         },
@@ -114,36 +116,29 @@ function Internal({
   return (
     <>
       <div className="space-y-1">
-        <DialogTitle>Send to repository?</DialogTitle>
+        <DialogTitle>{t("title")}</DialogTitle>
         <DialogDescription>
-          Before closing, you can send this patient&apos;s {meds.length}{" "}
-          {meds.length === 1 ? "medication" : "medications"} and the
-          interactions you observed to the FHIR repository. No personal data is
-          sent.
+          {t("description", { count: meds.length })}
         </DialogDescription>
       </div>
 
       <div className="space-y-2">
         <p className="text-sm">
-          Interactions at or above{" "}
-          <span className="font-bold">{SEVERITY_LABELS[threshold]}</span>:
+          {t.rich("atOrAbove", {
+            badge: () => <IntBadge0 severity={threshold} />,
+          })}
         </p>
         {!inputs.complete ? (
-          <p className="text-sm text-muted-foreground">
-            Interactions can&apos;t be checked because some substances are
-            missing. Only the medications will be sent.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("incomplete")}</p>
         ) : loading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner />
-            Checking interactions...
+            {t("checking")}
           </div>
         ) : error ? (
-          <p className="text-sm text-destructive">
-            Could not check interactions. Only the medications will be sent.
-          </p>
+          <p className="text-sm text-destructive">{t("error")}</p>
         ) : observed.length === 0 ? (
-          <p className="text-sm text-muted-foreground">None.</p>
+          <p className="text-sm text-muted-foreground">{t("none")}</p>
         ) : (
           <ul className="max-h-64 overflow-y-auto border border-border">
             {observed.map(([int, i]) => (
@@ -159,8 +154,10 @@ function Internal({
                   <span className="space-y-1">
                     <span className="flex flex-wrap items-center gap-1 font-bold">
                       <IntBadge int={int} />
-                      {inputs.substances[int[0]]} and{" "}
-                      {inputs.substances[int[1]]}
+                      {tInt("pair", {
+                        first: inputs.substances[int[0]],
+                        second: inputs.substances[int[1]],
+                      })}
                     </span>
                     {int[2] && <span className="block text-sm">{int[2]}</span>}
                   </span>
@@ -173,18 +170,18 @@ function Internal({
 
       <DialogFooter>
         <Button variant="outline" onClick={onCancel} disabled={sending}>
-          Back to review
+          {t("back")}
         </Button>
         <Button variant="outline" onClick={onExit} disabled={sending}>
           <X />
-          Finish without sending
+          {t("finishWithoutSending")}
         </Button>
         <Button
           onClick={send}
           disabled={sending || loading || meds.length === 0}
         >
           <Send />
-          {sending ? "Sending..." : "Send and finish"}
+          {sending ? t("sending") : t("sendAndFinish")}
         </Button>
       </DialogFooter>
     </>

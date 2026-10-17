@@ -13,6 +13,12 @@ ROLES: tuple[Role, ...] = get_args(Role)
 
 _USERNAME_RE = re.compile(r"^[a-z0-9._-]{3,64}$")
 
+# Demo accounts for the dev phase, seeded when SEED_DEV_USERS is on (the default).
+# (username, password, role)
+DEV_USERS: tuple[tuple[str, str, "Role"], ...] = (
+    ("mrnovak", "abcdef123456", "clinician"),
+)
+
 
 class UserError(ValueError):
     """An operation was refused; the message is safe to show to the operator."""
@@ -102,5 +108,19 @@ def ensure_bootstrap_admin(
             "INSERT INTO users (username, password_hash, role)"
             " SELECT %s, %s, 'admin' WHERE NOT EXISTS (SELECT 1 FROM users)",
             (normalize_username(username), password_hash),
+        ).rowcount
+    return bool(created)
+
+
+def ensure_user(
+    conn: Connection[DictRow], username: str, password_hash: str, role: Role
+) -> bool:
+    """Creates the user if no user has that name; never touches an existing one.
+    True if it was created."""
+    with conn.transaction():
+        created = conn.execute(
+            "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)"
+            " ON CONFLICT (username) DO NOTHING",
+            (normalize_username(username), password_hash, role),
         ).rowcount
     return bool(created)

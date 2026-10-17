@@ -1,0 +1,22 @@
+{
+  "en": {
+    "selectView": "Please select the view (MVP).",
+    "doctor": "Doctor",
+    "patient": "Patient"
+  },
+  "cs": {
+    "selectView": "Vyberte prosím zobrazení (MVP).",
+    "doctor": "Lékař",
+    "patient": "Pacient"
+  },
+  "sk": {
+    "selectView": "Vyberte, prosím, zobrazenie (MVP).",
+    "doctor": "Lekár",
+    "patient": "Pacient"
+  },
+  "uk": {
+    "selectView": "Будь ласка, оберіть режим перегляду (MVP).",
+    "doctor": "Лікар",
+    "patient": "Пацієнт"
+  }
+}
