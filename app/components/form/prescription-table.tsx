@@ -159,7 +159,7 @@ export default function PrescriptionTable({
                   </div>
                 </TableCell>
                 <TableCell className={"w-px"}>
-                  <div className={"flex items-center gap-x-1"}>
+                  <div className={"flex items-center justify-end gap-x-1"}>
                     {p.note?.trim() && (
                       <Tooltip
                         side={"left"}
@@ -174,11 +174,12 @@ export default function PrescriptionTable({
                       >
                         <Button
                           type={"button"}
-                          variant={"outline"}
+                          variant={"secondary"}
                           size={"icon-xs"}
+                          className={"size-8"}
                           aria-label={`${t("note")}: ${p.note.trim()}`}
                         >
-                          <CircleQuestionMark />
+                          <CircleQuestionMark className={"size-3.5"} />
                         </Button>
                       </Tooltip>
                     )}
@@ -186,10 +187,11 @@ export default function PrescriptionTable({
                       type={"button"}
                       variant={"destructive"}
                       size={"icon-xs"}
+                      className={"size-8"}
                       aria-label={t("delete")}
                       onClick={() => remove(i)}
                     >
-                      <Trash2 />
+                      <Trash2 className={"size-3.5"} />
                     </Button>
                   </div>
                 </TableCell>
