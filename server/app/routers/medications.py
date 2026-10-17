@@ -4,10 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from psycopg import Connection
 from psycopg.rows import DictRow
 
+from app.auth import require_user
 from app.db import get_conn
 from app.prescriptions import Prescription, lookup_prescription
 
-router = APIRouter(prefix="/medications", tags=["medications"])
+router = APIRouter(
+    prefix="/api/medications",
+    tags=["medications"],
+    dependencies=[Depends(require_user)],
+)
 
 
 @router.get("/substances")

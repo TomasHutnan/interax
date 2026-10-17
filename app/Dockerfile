@@ -1,0 +1,33 @@
+# Next.js app, built as a standalone server (output: "standalone" in next.config.ts).
+#
+#   docker build --build-arg API_INTERNAL_URL=http://server:8080 -t interax-web ./app
+#
+# API_INTERNAL_URL is where /api/* is proxied to. Rewrites are fixed at build
+# time, so changing it needs a rebuild.
+
+FROM node:22-bookworm-slim AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG API_INTERNAL_URL=http://server:8080
+ENV API_INTERNAL_URL=${API_INTERNAL_URL}
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:22-bookworm-slim AS run
+WORKDIR /app
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]

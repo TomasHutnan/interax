@@ -151,6 +151,9 @@ def __fetch_interactions(substances: list[str]) -> list[Interaction]:
 
         for interaction in pair_interactions:
             mechanism = interaction.get("mechanism") or ""
+            if "DDInter" in mechanism:
+                mechanism = ""
+
             severity = interaction.get("severity") or "unknown"
             interactions.append(
                 Interaction(
