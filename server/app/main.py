@@ -12,6 +12,7 @@ from app.routers import (
     medications,
     regimens,
     scan,
+    uploads,
 )
 
 
@@ -41,3 +42,4 @@ app.include_router(interactions.router)
 app.include_router(medications.router)
 app.include_router(regimens.router)
 app.include_router(scan.router)
+app.include_router(uploads.router)

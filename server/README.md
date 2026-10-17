@@ -29,7 +29,8 @@ server/
 │       ├── health.py    # GET  /health
 │       ├── medications.py # GET /medications/substances?name=...
 │       ├── regimens.py  # GET  /regimens/find?text=..., /regimens/components?name=...
-│       └── scan.py      # POST /scan (auto-detects package vs handwritten)
+│       ├── scan.py      # POST /scan (auto-detects package vs handwritten)
+│       └── uploads.py   # POST /api/uploads, GET|DELETE /api/uploads/{id} (JSON blobs)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
     ├── auto.py          # classify + extract in one model call
     ├── package.py       # dedicated packaging prompt
