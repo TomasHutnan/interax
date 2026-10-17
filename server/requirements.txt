@@ -1,3 +1,4 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi
 uvicorn[standard]
 python-multipart
@@ -5,4 +6,7 @@ requests
 dotenv
 pydantic
 psycopg[binary,pool]
+intersystems-irispython
+sentence-transformers
+rapidfuzz
 faster-whisper

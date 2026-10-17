@@ -82,7 +82,7 @@ function dotenv_get --argument-names key
     string trim -- $value | string trim -c '"\''
 end
 
-for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY UPLOAD_TTL
+for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY UPLOAD_TTL IRIS_HOST IRIS_PORT IRIS_HTTP_PORT IRIS_NAMESPACE IRIS_USER IRIS_PASSWORD
     set -q $key; and continue
     set -l value (dotenv_get $key)
     test -n "$value"; and set -gx $key $value
@@ -189,6 +189,13 @@ set -q UNSLOTH_MODEL; and set -a server_env UNSLOTH_MODEL=$UNSLOTH_MODEL
 if set -q UNSLOTH_API_KEY
     set -a server_secrets unsloth-api-key=$UNSLOTH_API_KEY
     set -a server_env UNSLOTH_API_KEY=secretref:unsloth-api-key
+end
+for ikey in IRIS_HOST IRIS_PORT IRIS_HTTP_PORT IRIS_NAMESPACE IRIS_USER
+    set -q $ikey; and set -a server_env $ikey=$$ikey
+end
+if set -q IRIS_PASSWORD
+    set -a server_secrets iris-password=$IRIS_PASSWORD
+    set -a server_env IRIS_PASSWORD=secretref:iris-password
 end
 set -q RXLABEL_BASE_URL; and set -a server_env RXLABEL_BASE_URL=$RXLABEL_BASE_URL
 if set -q RXLABEL_API_KEY

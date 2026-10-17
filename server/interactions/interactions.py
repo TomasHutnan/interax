@@ -8,6 +8,11 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
+try:
+    from rag.pipeline import check_rag_interactions
+except ModuleNotFoundError:
+    from server.rag.pipeline import check_rag_interactions
+
 BLOCK_SIZE = 5
 ROOT_ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 if not ROOT_ENV_FILE.exists():
@@ -18,17 +23,37 @@ load_dotenv(override=False)
 
 RXLABEL_BASE_URL = os.getenv("RXLABEL_BASE_URL", "").rstrip("/")
 RXLABEL_API_KEY = os.getenv("RXLABEL_API_KEY", "")
+IRIS_HOST = os.getenv("IRIS_HOST", "")
 
 
 @dataclass
 class Interaction:
     substance_1: str
     substance_2: str
-    description: str
+    pathophysiological_mechanism: str
+    clinical_consequence: str
     severity: str
 
 
 def get_interactions(substances: list[str]) -> list[Interaction]:
+    if len(substances) < 2:
+        return []
+
+    if IRIS_HOST:
+        rag_hits = check_rag_interactions(substances)
+        return __deduplicate_interactions(
+            [
+                Interaction(
+                    substance_1=hit.substance_1,
+                    substance_2=hit.substance_2,
+                    pathophysiological_mechanism=hit.pathophysiological_mechanism,
+                    clinical_consequence=hit.clinical_consequence,
+                    severity=hit.severity,
+                )
+                for hit in rag_hits
+            ]
+        )
+
     if len(substances) <= 10:
         return __fetch_interactions(substances)
 
@@ -134,7 +159,8 @@ def __fetch_interactions(substances: list[str]) -> list[Interaction]:
                 Interaction(
                     substance_1=sub_1,
                     substance_2=sub_2,
-                    description=mechanism,
+                    pathophysiological_mechanism=mechanism,
+                    clinical_consequence="",
                     severity=severity,
                 )
             )
