@@ -7,3 +7,15 @@ pydantic>=2.7,<3
 psycopg[binary,pool]>=3.2,<4
 faster-whisper>=1.1,<2
 argon2-cffi>=25.1,<26
+--extra-index-url https://download.pytorch.org/whl/cpu
+fastapi
+uvicorn[standard]
+python-multipart
+requests
+dotenv
+pydantic
+psycopg[binary,pool]
+intersystems-irispython
+sentence-transformers
+rapidfuzz
+faster-whisper

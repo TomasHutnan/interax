@@ -53,6 +53,15 @@ def check_interactions(
         ib = _find_substance_index(item.substance_2, substances)
 
         if ia is not None and ib is not None and ia != ib:
-            results.append((ia, ib, item.description, item.severity))
+            description = " ".join(
+                filter(
+                    None,
+                    [
+                        item.pathophysiological_mechanism,
+                        item.clinical_consequence,
+                    ],
+                )
+            )
+            results.append((ia, ib, description, item.severity))
 
     return results
