@@ -244,63 +244,34 @@ def build_sukl_dataframe() -> pd.DataFrame:
 
 
 def build_ddinter_dataframe() -> pd.DataFrame:
-    """Concatenate DDInter CSVs, filter for Major & Moderate interactions, and enrich mechanism text."""
-    print("-> Parsing DDInter CSVs...")
+    """Concatenate DDInter CSVs, keeping all interaction severity levels, and enrich mechanism text."""
+    print("-> Parsing DDInter CSVs (all severity levels)...")
     csv_files = sorted(config.DDINTER_DIR.glob("ddinter_downloads_code_*.csv"))
     dfs = [pd.read_csv(f, dtype=str) for f in csv_files]
     df_all = pd.concat(dfs, ignore_index=True)
 
-    # Filter strictly for Major (Level 1) and Moderate (Level 2)
-    df_filtered = df_all[df_all["Level"].isin(["Major", "Moderate"])].copy()
-    df_filtered["SubstanceA"] = df_filtered["Drug_A"].fillna("").str.strip()
-    df_filtered["SubstanceB"] = df_filtered["Drug_B"].fillna("").str.strip()
-    df_filtered["RiskLevel"] = df_filtered["Level"].fillna("Major").str.strip()
+    df_all["SubstanceA"] = df_all["Drug_A"].fillna("").str.strip()
+    df_all["SubstanceB"] = df_all["Drug_B"].fillna("").str.strip()
+    df_all["RiskLevel"] = df_all["Level"].fillna("Unknown").str.strip()
 
-    # Canonical pair deduplication
+    # Canonical pair + severity deduplication (do not drop Moderate or Minor rows)
     seen = set()
     rows = []
 
     # First add enriched critical oncology interactions
     for sub_a, sub_b, level, mech in EXTRA_CRITICAL_INTERACTIONS:
-        key = tuple(sorted([sub_a.lower(), sub_b.lower()]))
+        key = (tuple(sorted([sub_a.lower(), sub_b.lower()])), level.lower())
         seen.add(key)
         rows.append((sub_a, sub_b, level, mech))
 
-    # Add all Major interactions + Moderate interactions involving CPIC/oncology drugs
-    cpic_drugs = {
-        "tamoxifen",
-        "paroxetine",
-        "fluoxetine",
-        "ondansetron",
-        "tropisetron",
-        "capecitabine",
-        "fluorouracil",
-        "brivudine",
-        "mercaptopurine",
-        "azathioprine",
-        "thioguanine",
-        "tioguanine",
-        "atazanavir",
-        "simvastatin",
-        "atorvastatin",
-        "rosuvastatin",
-        "pravastatin",
-        "fluvastatin",
-        "pitavastatin",
-        "lovastatin",
-    }
-
-    for _, r in df_filtered.iterrows():
+    for _, r in df_all.iterrows():
         a = r["SubstanceA"]
         b = r["SubstanceB"]
         lvl = r["RiskLevel"]
         if not a or not b:
             continue
         al, bl = a.lower(), b.lower()
-        # Keep all Major (Level 1) and any Moderate (Level 2) touching key oncology/CPIC substances
-        if lvl != "Major" and al not in cpic_drugs and bl not in cpic_drugs:
-            continue
-        key = tuple(sorted([al, bl]))
+        key = (tuple(sorted([al, bl])), lvl.lower())
         if key in seen:
             continue
         seen.add(key)
@@ -308,14 +279,14 @@ def build_ddinter_dataframe() -> pd.DataFrame:
         mech = (
             PATHWAY_ENRICHMENT.get((al, bl))
             or PATHWAY_ENRICHMENT.get((bl, al))
-            or f"DDInter {lvl} Drug-Drug Interaction between {a} and {b}. Refer to clinical guidelines for CYP450/transporter conflict."
+            or f"DDInter {lvl} Drug-Drug Interaction between {a} and {b}."
         )
         rows.append((a[:255], b[:255], lvl[:50], mech[:1024]))
 
     df_out = pd.DataFrame(
         rows, columns=["SubstanceA", "SubstanceB", "RiskLevel", "MechanismText"]
     )
-    print(f"   Prepared {len(df_out):,} Major/Critical DDInter interaction rows.")
+    print(f"   Prepared {len(df_out):,} DDInter interaction rows (all severity levels).")
     return df_out
 
 
