@@ -21,7 +21,7 @@ export default function DoctorForm({ form }: { form: PatientForm }) {
   const [state, setState] = useState<MPatientForm>(toMPatientForm(form));
   const [showInts, setShowInts] = useState(false);
   const [highlight, setHighlight] = useState<number[]>([]);
-  const [threshold, setThreshold] = useState<Severity>("unknown");
+  const [threshold, setThreshold] = useState<Severity>("minor");
   const [knownInts, setKnownInts] = useState<{
     key: string;
     data: Interaction[];
