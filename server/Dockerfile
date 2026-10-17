@@ -18,8 +18,8 @@ ARG WHISPER_MODEL=small
 ENV WHISPER_MODEL=${WHISPER_MODEL} \
     WHISPER_MODEL_DIR=/models
 RUN python -c "import os; from faster_whisper.utils import download_model; \
- download_model(os.environ['WHISPER_MODEL'], cache_dir=os.environ['WHISPER_MODEL_DIR'])" \
- && chown -R app /models
+    download_model(os.environ['WHISPER_MODEL'], cache_dir=os.environ['WHISPER_MODEL_DIR'])" \
+    && chown -R app /models
 
 COPY . .
 

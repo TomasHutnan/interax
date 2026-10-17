@@ -10,3 +10,5 @@ __pycache__/
 req-tmp.jpg
 Dockerfile
 .dockerignore
+tests/
+requirements-dev.txt

@@ -9,9 +9,11 @@ import { Prescription } from "@/lib/typings";
  * The name is sent as the `name` query parameter, since browsers cannot send a body with a GET request.
  */
 export async function fetchSubstances(name: string): Promise<Prescription> {
-    const res = await baseFetcher(`/medications/substances?name=${encodeURIComponent(name.trim())}`, { method: "GET" });
-    if (!res.ok)
-        throw new HttpError(res.status, res.statusText);
+  const res = await baseFetcher(
+    `/api/medications/substances?name=${encodeURIComponent(name.trim())}`,
+    { method: "GET" },
+  );
+  if (!res.ok) throw new HttpError(res.status, res.statusText);
 
-    return parsePrescription(await res.json());
+  return parsePrescription(await res.json());
 }

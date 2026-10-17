@@ -21,6 +21,9 @@ services:
     build:
       context: ./server
     env_file: .env
+    environment:
+      # Local stack is plain http; production keeps Secure cookies.
+      SESSION_COOKIE_SECURE: "false"
     ports:
       - "${SERVER_HOST_PORT:-8080}:8080"
     extra_hosts:
@@ -29,6 +32,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./app
+      args:
+        # Browser -> web:3000/api/* -> server:8080/api/* (same origin, so the session cookie is first-party).
+        API_INTERNAL_URL: http://server:8080
+    ports:
+      - "${WEB_HOST_PORT:-3000}:3000"
+    depends_on:
+      - server
     restart: unless-stopped
 
 volumes:

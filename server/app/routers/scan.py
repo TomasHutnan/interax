@@ -15,7 +15,7 @@ from pydantic import BaseModel, TypeAdapter, ValidationError
 
 from app.prescriptions import Prescription, lookup_prescription, merge_prescriptions
 
-router = APIRouter(prefix="/scan", tags=["scan"])
+router = APIRouter(prefix="/api/scan", tags=["scan"])
 
 _meds_adapter = TypeAdapter(list[Prescription])
 
@@ -74,7 +74,9 @@ def scan(
         if isinstance(result, auto.PackageResult):
             name = result.brandName or result.genericName
             query = " ".join(filter(None, [name, result.strength]))
-            scanned = [_resolve(conn, name, result.usage or "", query=query)] if name else []
+            scanned = (
+                [_resolve(conn, name, result.usage or "", query=query)] if name else []
+            )
         else:
             scanned = [
                 _resolve(conn, med.name, med.usage or "") for med in result.medications
