@@ -44,7 +44,8 @@ def scan(
 
     The model decides whether the image shows packaging or a handwritten list.
     Each medication read from it is matched against SÚKL; medications already in
-    `meds` get their usage updated, new ones are appended. Returns the updated list.
+    `meds` get their usage (and, if matched, `mg`/`subs`) updated, new ones are
+    appended. Returns the updated list.
     """
     try:
         current = _meds_adapter.validate_json(meds)

@@ -41,11 +41,10 @@ server/
 
 All settings come from the **repo-root `.env`** (shared with the `db` service; see `.env.example`).
 
-| Variable                                                 | Used for                                                          |
-| -------------------------------------------------------- | ----------------------------------------------------------------- |
-| `DATABASE_URL`                                           | Postgres connection (required)                                    |
-| `CORS_ORIGINS`                                           | Comma-separated allowed origins (default `http://localhost:3000`) |
-| `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint                                                |
+| Variable                                                 | Used for                       |
+| -------------------------------------------------------- | ------------------------------ |
+| `DATABASE_URL`                                           | Postgres connection (required) |
+| `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint             |
 
 ## Running
 

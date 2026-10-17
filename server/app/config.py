@@ -21,7 +21,6 @@ load_dotenv(ROOT_ENV_FILE, override=False)
 @dataclass(frozen=True)
 class Settings:
     database_url: str
-    cors_origins: list[str]
     upload_ttl: timedelta
 
 
@@ -51,11 +50,6 @@ def _positive_seconds(name: str, default: int) -> timedelta:
 
 settings = Settings(
     database_url=_require("DATABASE_URL"),
-    cors_origins=[
-        origin.strip()
-        for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
-        if origin.strip()
-    ],
     # Seconds an upload lives before it's deleted.
     upload_ttl=_positive_seconds("UPLOAD_TTL", 3600),
 )
