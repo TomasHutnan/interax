@@ -7,10 +7,10 @@ import useSWRFetch, {
 
 const getFormOptions: MutationOptions<string, { data: PatientForm }> = {
   toastMessages: {
-    loading: "Fetching patient form data...",
-    success: "Patient form found!",
+    loading: "Looking up code...",
+    success: "Patient form loaded.",
     error: {
-      [404]: "Patient form code not found.",
+      [404]: "No patient form found for this code.",
     },
   },
   onMutation: async (code, form) => {
@@ -32,8 +32,8 @@ export function useGetForm() {
 
 const getComponentsOptions: MutationOptions<string, string[]> = {
   toastMessages: {
-    loading: "Updating components...",
-    success: "Components updated.",
+    loading: "Loading regimen substances...",
+    success: "Regimen substances loaded.",
     error: {
       [404]: "Regimen not found.",
     },

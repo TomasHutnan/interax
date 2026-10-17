@@ -45,6 +45,7 @@ def client():
         ("GET", "/api/regimens/components?name=FOLFOX", {}),
         ("GET", "/api/medications/substances?name=ibalgin", {}),
         ("POST", "/api/interactions", {"json": {"substances": ["a", "b"]}}),
+        ("POST", "/api/repo", {"json": {"meds": [], "interactions": []}}),
     ],
 )
 def test_clinician_routes_need_a_session(client, method, path, kwargs):

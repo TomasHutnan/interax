@@ -55,7 +55,7 @@ export function OTPForm() {
           type={"submit"}
           disabled={otp.length < 6 || isMutating}
         >
-          {isMutating ? "Loading..." : "Continue"}
+          {isMutating ? "Checking..." : "Continue"}
         </Button>
       </div>
     </form>

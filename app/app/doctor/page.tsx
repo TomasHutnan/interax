@@ -87,7 +87,7 @@ export default function Page() {
             type={"submit"}
             disabled={!username || !password || loading}
           >
-            {loading ? "Loading..." : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </div>
       </form>

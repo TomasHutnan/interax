@@ -58,11 +58,11 @@ export function getErrorMessage(
       case 404:
         return "Not found (E404).";
       case 429:
-        return "You are too fast. Try again. (E429).";
+        return "Too many requests. Wait a moment and try again (E429).";
       case 500:
         return "Server error occurred. Try again. (E500).";
       case 503:
-        return "No server available to service your request. Try again. (E503).";
+        return "The service is temporarily unavailable. Try again shortly (E503).";
       default:
         return `This did not work out (${err.message}).`;
     }

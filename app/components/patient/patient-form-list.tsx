@@ -69,7 +69,7 @@ export default function PatientFormList() {
     try {
       toast
         .promise(uploadForm(forms![id]), {
-          loading: "Getting code...",
+          loading: "Generating code...",
           success: "Code created.",
           error: (err) =>
             getErrorMessage(
