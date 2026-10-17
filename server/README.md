@@ -104,7 +104,9 @@ The result is merged into `meds` and the updated list is returned:
   Only its `usage` is updated, and only when the image showed one. Substances are not used for
   matching, so different products with the same substance (e.g. generics) stay separate.
 - Otherwise it is **appended**. The order of `meds` is preserved.
-- Packaging has no dosing, so a package scan only adds the product if it's missing.
+- A package scan also reads dosing instructions a pharmacist wrote on the box by hand (or on a
+  sticker) as its `usage`; printed leaflet dosage is ignored. Without such a note, `usage` is `""`
+  and an already-present product keeps its usage.
 
 `usage` is normalized to one of these notations, or `""` if not written / not recognised:
 

@@ -74,7 +74,7 @@ def scan(
         if isinstance(result, auto.PackageResult):
             name = result.brandName or result.genericName
             query = " ".join(filter(None, [name, result.strength]))
-            scanned = [_resolve(conn, name, query=query)] if name else []
+            scanned = [_resolve(conn, name, result.usage or "", query=query)] if name else []
         else:
             scanned = [
                 _resolve(conn, med.name, med.usage or "") for med in result.medications
