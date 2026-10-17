@@ -32,7 +32,8 @@ export default function DoctorFormControls({
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   onFinish: () => void;
-  onFinishAndSend: () => void;
+  /** Missing when the patient didn't agree to share data: then there's only "Finish". */
+  onFinishAndSend?: () => void;
 }) {
   const t = useTranslations("doctor.controls");
   return (
@@ -49,14 +50,23 @@ export default function DoctorFormControls({
           <RotateCcw />
           {t("reset")}
         </Button>
-        <Button variant={"outline"} onClick={onFinish}>
-          <Check />
-          {t("finishWithoutSending")}
-        </Button>
-        <Button onClick={onFinishAndSend}>
-          <Send />
-          {t("finishAndSend")}
-        </Button>
+        {onFinishAndSend ? (
+          <>
+            <Button variant={"outline"} onClick={onFinish}>
+              <Check />
+              {t("finishWithoutSending")}
+            </Button>
+            <Button onClick={onFinishAndSend}>
+              <Send />
+              {t("finishAndSend")}
+            </Button>
+          </>
+        ) : (
+          <Button onClick={onFinish}>
+            <Check />
+            {t("finish")}
+          </Button>
+        )}
       </div>
     </div>
   );

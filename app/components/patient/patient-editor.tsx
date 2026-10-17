@@ -8,7 +8,15 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Camera, Check, Mic, Plus, Trash2, X } from "lucide-react";
+import {
+  Camera,
+  Check,
+  CircleQuestionMark,
+  Mic,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { PatientForm, Prescription } from "@/lib/typings";
 import { saveForm } from "@/lib/storage";
 import { scanMeds } from "@/lib/scan";
@@ -49,6 +57,22 @@ export default function PatientEditor({
   const recorder = useRecorder();
   const locked = busy || recorder.recording;
   const fileInput = useRef<HTMLInputElement>(null);
+  // Rows whose note box is open; those that already have a note start open.
+  const [openNotes, setOpenNotes] = useState<Set<number>>(
+    () =>
+      new Set(
+        initial.prescriptions.flatMap((p, i) =>
+          (p.note ?? "").trim() ? [i] : [],
+        ),
+      ),
+  );
+
+  const toggleNote = (index: number) =>
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(index)) next.add(index);
+      return next;
+    });
 
   const canSave =
     form.treatment.name.trim() !== "" ||
@@ -71,11 +95,21 @@ export default function PatientEditor({
       ],
     }));
 
-  const removePrescription = (index: number) =>
+  const removePrescription = (index: number) => {
     setForm((prev) => ({
       ...prev,
       prescriptions: prev.prescriptions.filter((_, i) => i !== index),
     }));
+    // keep open note boxes on the same rows after the shift
+    setOpenNotes(
+      (prev) =>
+        new Set(
+          [...prev]
+            .filter((i) => i !== index)
+            .map((i) => (i > index ? i - 1 : i)),
+        ),
+    );
+  };
 
   function scan(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -163,9 +197,9 @@ export default function PatientEditor({
 
   function save() {
     const cleaned: PatientForm = {
-      prescriptions: form.prescriptions.filter(
-        (p) => p.drug.trim() || p.usage.trim(),
-      ),
+      prescriptions: form.prescriptions
+        .filter((p) => p.drug.trim() || p.usage.trim())
+        .map((p) => ({ ...p, note: (p.note ?? "").trim() })),
       treatment: { name: form.treatment.name.trim(), subs: [] },
     };
 
@@ -239,48 +273,84 @@ export default function PatientEditor({
           </p>
         )}
         <div className={"space-y-4"}>
-          {form.prescriptions.map((p, i) => (
-            <div
-              key={i}
-              className={
-                "space-y-4 border border-muted-foreground p-4 shadow-md"
-              }
-            >
-              <label className={"block space-y-2"}>
-                <span className={"font-medium"}>{t("drug")}</span>
-                <input
-                  type={"text"}
-                  className={INPUT_CLASS}
-                  value={p.drug}
-                  onChange={(e) =>
-                    updatePrescription(i, { drug: e.target.value })
-                  }
-                />
-              </label>
-              <label className={"block space-y-2"}>
-                <span className={"font-medium"}>{t("dosing")}</span>
-                <input
-                  type={"text"}
-                  className={INPUT_CLASS}
-                  placeholder={t("dosingPlaceholder")}
-                  value={p.usage}
-                  onChange={(e) =>
-                    updatePrescription(i, { usage: e.target.value })
-                  }
-                />
-              </label>
-              <Button
-                type={"button"}
-                variant={"destructive"}
-                size={"lg"}
-                className={"w-full"}
-                onClick={() => removePrescription(i)}
+          {form.prescriptions.map((p, i) => {
+            const hasNote = !!(p.note ?? "").trim();
+            const noteOpen = openNotes.has(i);
+            return (
+              <div
+                key={i}
+                className={
+                  "space-y-4 border border-muted-foreground p-4 shadow-md"
+                }
               >
-                <Trash2 />
-                {t("remove")}
-              </Button>
-            </div>
-          ))}
+                <div className={"space-y-2"}>
+                  <div className={"flex items-center justify-between gap-2"}>
+                    <label htmlFor={`drug-${i}`} className={"font-medium"}>
+                      {t("drug")}
+                    </label>
+                    <Button
+                      type={"button"}
+                      variant={hasNote ? "default" : "outline"}
+                      size={"icon-lg"}
+                      aria-label={t("note.toggle")}
+                      aria-expanded={noteOpen}
+                      title={t("note.toggle")}
+                      onClick={() => toggleNote(i)}
+                    >
+                      <CircleQuestionMark className={"size-5"} />
+                    </Button>
+                  </div>
+                  <input
+                    id={`drug-${i}`}
+                    type={"text"}
+                    className={INPUT_CLASS}
+                    value={p.drug}
+                    onChange={(e) =>
+                      updatePrescription(i, { drug: e.target.value })
+                    }
+                  />
+                </div>
+                {noteOpen && (
+                  <label className={"block space-y-2"}>
+                    <span className={"font-medium"}>{t("note.label")}</span>
+                    <textarea
+                      rows={3}
+                      maxLength={2000}
+                      className={INPUT_CLASS}
+                      placeholder={t("note.placeholder")}
+                      value={p.note ?? ""}
+                      autoFocus={openNotes.has(i) && !hasNote}
+                      onChange={(e) =>
+                        updatePrescription(i, { note: e.target.value })
+                      }
+                    />
+                  </label>
+                )}
+                <label className={"block space-y-2"}>
+                  <span className={"font-medium"}>{t("dosing")}</span>
+                  <input
+                    type={"text"}
+                    className={INPUT_CLASS}
+                    placeholder={t("dosingPlaceholder")}
+                    value={p.usage}
+                    onChange={(e) =>
+                      updatePrescription(i, { usage: e.target.value })
+                    }
+                  />
+                </label>
+                <Button
+                  type={"button"}
+                  variant={"destructive"}
+                  size={"lg"}
+                  className={"w-full"}
+                  onClick={() => removePrescription(i)}
+                >
+                  <Trash2 />
+                  {t("remove")}
+                </Button>
+              </div>
+            );
+          })}
         </div>
       </section>
       <section className={"space-y-2"}>

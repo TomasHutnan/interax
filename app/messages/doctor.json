@@ -12,6 +12,7 @@
       "showInteractions": "See interactions",
       "hideInteractions": "Hide interactions",
       "reset": "Reset",
+      "finish": "Finish",
       "finishWithoutSending": "Finish without sending",
       "finishAndSend": "Finish and send",
       "copy": {
@@ -37,7 +38,8 @@
       "substancesPlaceholder": "Substance A / B",
       "autoFill": "Auto-fill",
       "filling": "Filling",
-      "notFound": "No drug found for that name."
+      "notFound": "No drug found for that name.",
+      "note": "Patient's note"
     },
     "treatment": {
       "title": "Regimen:",
@@ -85,6 +87,7 @@
       "showInteractions": "Zobrazit interakce",
       "hideInteractions": "Skrýt interakce",
       "reset": "Obnovit",
+      "finish": "Ukončit",
       "finishWithoutSending": "Ukončit bez odeslání",
       "finishAndSend": "Ukončit a odeslat",
       "copy": {
@@ -110,7 +113,8 @@
       "substancesPlaceholder": "Látka A / B",
       "autoFill": "Doplnit automaticky",
       "filling": "Doplňování",
-      "notFound": "Lék s tímto názvem nebyl nalezen."
+      "notFound": "Lék s tímto názvem nebyl nalezen.",
+      "note": "Poznámka pacienta"
     },
     "treatment": {
       "title": "Léčebný režim:",
@@ -158,6 +162,7 @@
       "showInteractions": "Zobraziť interakcie",
       "hideInteractions": "Skryť interakcie",
       "reset": "Obnoviť",
+      "finish": "Ukončiť",
       "finishWithoutSending": "Ukončiť bez odoslania",
       "finishAndSend": "Ukončiť a odoslať",
       "copy": {
@@ -183,7 +188,8 @@
       "substancesPlaceholder": "Látka A / B",
       "autoFill": "Doplniť automaticky",
       "filling": "Dopĺňanie",
-      "notFound": "Liek s týmto názvom sa nenašiel."
+      "notFound": "Liek s týmto názvom sa nenašiel.",
+      "note": "Poznámka pacienta"
     },
     "treatment": {
       "title": "Liečebný režim:",
@@ -231,6 +237,7 @@
       "showInteractions": "Показати взаємодії",
       "hideInteractions": "Сховати взаємодії",
       "reset": "Скинути",
+      "finish": "Завершити",
       "finishWithoutSending": "Завершити без надсилання",
       "finishAndSend": "Завершити й надіслати",
       "copy": {
@@ -256,7 +263,8 @@
       "substancesPlaceholder": "Речовина A / B",
       "autoFill": "Автозаповнення",
       "filling": "Заповнення",
-      "notFound": "Препарат із такою назвою не знайдено."
+      "notFound": "Препарат із такою назвою не знайдено.",
+      "note": "Примітка пацієнта"
     },
     "treatment": {
       "title": "Схема лікування:",

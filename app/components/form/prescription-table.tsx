@@ -5,8 +5,9 @@ import {
   PatientForm,
   Prescription,
 } from "@/lib/typings";
-import { Plus, Trash2 } from "lucide-react";
+import { CircleQuestionMark, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Tooltip } from "../ui/tooltip";
 import { cn } from "cn";
 import { toast } from "../ui/toast";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
@@ -158,15 +159,39 @@ export default function PrescriptionTable({
                   </div>
                 </TableCell>
                 <TableCell className={"w-px"}>
-                  <Button
-                    type={"button"}
-                    variant={"destructive"}
-                    size={"icon-xs"}
-                    aria-label={t("delete")}
-                    onClick={() => remove(i)}
-                  >
-                    <Trash2 />
-                  </Button>
+                  <div className={"flex items-center gap-x-1"}>
+                    {p.note?.trim() && (
+                      <Tooltip
+                        side={"left"}
+                        content={
+                          <>
+                            <span className={"block font-bold"}>
+                              {t("note")}
+                            </span>
+                            {p.note.trim()}
+                          </>
+                        }
+                      >
+                        <Button
+                          type={"button"}
+                          variant={"outline"}
+                          size={"icon-xs"}
+                          aria-label={`${t("note")}: ${p.note.trim()}`}
+                        >
+                          <CircleQuestionMark />
+                        </Button>
+                      </Tooltip>
+                    )}
+                    <Button
+                      type={"button"}
+                      variant={"destructive"}
+                      size={"icon-xs"}
+                      aria-label={t("delete")}
+                      onClick={() => remove(i)}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

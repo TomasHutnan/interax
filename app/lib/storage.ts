@@ -2,6 +2,7 @@ import { PatientForm } from "@/lib/typings";
 
 const FORMS_KEY = "interax.patient-forms";
 const UPLOADS_KEY = "interax.patient-uploads";
+const SHARE_KEY = "interax.share-consent";
 /**
  * Where older versions kept the logged-in doctor, password included. Only read to delete it.
  */
@@ -71,6 +72,20 @@ function parseRecord<T>(
 
 export const readRawForms = () => readRaw(FORMS_KEY);
 export const readRawUploads = () => readRaw(UPLOADS_KEY);
+export const readRawShareConsent = () => readRaw(SHARE_KEY);
+
+/**
+ * Whether the patient agreed to share anonymous data; null if they haven't been asked yet.
+ */
+export function parseShareConsent(raw: string | null): boolean | null {
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  return null;
+}
+
+export function saveShareConsent(share: boolean): boolean {
+  return writeRaw(SHARE_KEY, share);
+}
 
 export function parseForms(raw: string | null): StoredForms {
   return parseRecord<PatientForm>(

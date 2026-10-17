@@ -37,5 +37,5 @@ function Internal({ code }: { code: string }) {
       </div>
     );
 
-  return <DoctorForm form={res.data.data} />;
+  return <DoctorForm form={res.data.data} canShare={res.data.share === true} />;
 }

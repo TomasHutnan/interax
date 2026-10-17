@@ -17,7 +17,14 @@ import InteractionsPanel from "./interactions-panel";
 import FinishDialog from "./finish-dialog";
 import { Severity } from "@/lib/interactions";
 
-export default function DoctorForm({ form }: { form: PatientForm }) {
+export default function DoctorForm({
+  form,
+  canShare,
+}: {
+  form: PatientForm;
+  /** The patient agreed to share anonymous data with the repository. */
+  canShare: boolean;
+}) {
   const t = useTranslations("doctor.form");
   const router = useRouter();
   const [state, setState] = useState<MPatientForm>(toMPatientForm(form));
@@ -80,7 +87,7 @@ export default function DoctorForm({ form }: { form: PatientForm }) {
           open={showInts}
           setOpen={setShowInts}
           onFinish={exit}
-          onFinishAndSend={() => setFinishing(true)}
+          onFinishAndSend={canShare ? () => setFinishing(true) : undefined}
         />
       </div>
       {showInts && (
@@ -94,14 +101,16 @@ export default function DoctorForm({ form }: { form: PatientForm }) {
           onLoaded={onIntsLoaded}
         />
       )}
-      <FinishDialog
-        open={finishing}
-        onOpenChange={setFinishing}
-        state={state}
-        threshold={threshold}
-        known={knownInts}
-        onExit={exit}
-      />
+      {canShare && (
+        <FinishDialog
+          open={finishing}
+          onOpenChange={setFinishing}
+          state={state}
+          threshold={threshold}
+          known={knownInts}
+          onExit={exit}
+        />
+      )}
     </div>
   );
 }
@@ -118,6 +127,7 @@ function toMPrescription(pres: Prescription): MPrescription {
     drug: pres.drug + (pres.mg ? " " + pres.mg : ""),
     subs: pres.subs.join(" / "),
     usage: pres.usage,
+    note: pres.note,
   };
 }
 

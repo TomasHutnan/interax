@@ -2,7 +2,7 @@
 
 from psycopg import Connection
 from psycopg.rows import DictRow
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # dlp_slozeni.s: 'L' = active substance; other rows are excipients (amount often "PL").
 ACTIVE_SUBSTANCE = "L"
@@ -17,6 +17,8 @@ class Prescription(BaseModel):
     mg: str = ""
     subs: list[str] = []
     usage: str = ""
+    # Patient's free-text note for the doctor. Never sent to the LLM or the repository.
+    note: str = Field(default="", max_length=2000)
 
 
 def _amount_in_mg(amnt: str | None, un: str | None) -> str | None:

@@ -24,6 +24,7 @@ export function prepareMeds(meds: Prescription[]): Prescription[] {
       mg: normalizeMg(m.mg),
       subs: m.subs.map((s) => s.trim()),
       usage: m.usage.trim(),
+      note: (m.note ?? "").trim(),
     }));
 }
 
@@ -36,6 +37,7 @@ export function parsePrescription(data: unknown): Prescription {
       ? m.subs.filter((s: unknown): s is string => typeof s === "string")
       : [],
     usage: typeof m?.usage === "string" ? m.usage : "",
+    note: typeof m?.note === "string" ? m.note : "",
   };
 }
 

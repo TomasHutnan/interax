@@ -42,7 +42,8 @@ def upload_repo(payload: RepoUploadRequest) -> dict[str, object]:
         raise HTTPException(status_code=503, detail="repository not configured")
     try:
         return upload_to_fhir(
-            meds=[m.model_dump() for m in payload.meds],
+            # Notes are the patient's free text and may identify them.
+            meds=[m.model_dump(exclude={"note"}) for m in payload.meds],
             interactions=[(a, b, d, str(s)) for a, b, d, s in payload.interactions],
         )
     except requests.RequestException as exc:

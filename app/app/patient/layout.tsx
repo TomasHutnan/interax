@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Preferences from "@/components/menu/preferences";
+import ShareConsentDialog from "@/components/patient/share-consent-dialog";
 
 export const metadata: Metadata = {
   title: "InteraX - Patient",
@@ -26,6 +27,7 @@ export default function Layout({ children }: LayoutProps<"/patient">) {
       >
         {children}
       </main>
+      <ShareConsentDialog />
     </div>
   );
 }

@@ -38,6 +38,11 @@
       "dosing": "Dosing",
       "dosingPlaceholder": "e.g. 1-0-1-0",
       "remove": "Remove",
+      "note": {
+        "toggle": "Add a note for the doctor",
+        "label": "Note for the doctor",
+        "placeholder": "e.g. it makes me dizzy, I sometimes skip the evening dose..."
+      },
       "regimen": "Regimen:",
       "cancel": "Cancel",
       "save": "Save",
@@ -61,6 +66,18 @@
     },
     "uploads": {
       "unexpected": "Unexpected response from the server"
+    },
+    "consent": {
+      "title": "Help improve medications?",
+      "description": "May we share your medications and any interactions your doctor finds, anonymously, to help research make medications safer? Your name, notes and other personal details are never shared.",
+      "changeLater": "You can change this at any time on the main screen.",
+      "yes": "Yes, share anonymously",
+      "no": "No, thanks",
+      "saveFailed": "Could not save your choice on this device.",
+      "statusOn": "Anonymous data sharing is on.",
+      "statusOff": "Anonymous data sharing is off.",
+      "turnOn": "Turn on",
+      "turnOff": "Turn off"
     }
   },
   "cs": {
@@ -102,6 +119,11 @@
       "dosing": "Dávkování",
       "dosingPlaceholder": "např. 1-0-1-0",
       "remove": "Odebrat",
+      "note": {
+        "toggle": "Přidat poznámku pro lékaře",
+        "label": "Poznámka pro lékaře",
+        "placeholder": "např. motá se mi po něm hlava, večerní dávku občas vynechám..."
+      },
       "regimen": "Léčebný režim:",
       "cancel": "Zrušit",
       "save": "Uložit",
@@ -125,6 +147,18 @@
     },
     "uploads": {
       "unexpected": "Neočekávaná odpověď serveru"
+    },
+    "consent": {
+      "title": "Pomůžete zlepšit léky?",
+      "description": "Smíme anonymně sdílet vaše léky a interakce, které lékař zjistí, aby výzkum mohl učinit léčbu bezpečnější? Vaše jméno, poznámky ani jiné osobní údaje se nikdy nesdílejí.",
+      "changeLater": "Svou volbu můžete kdykoli změnit na hlavní obrazovce.",
+      "yes": "Ano, sdílet anonymně",
+      "no": "Ne, děkuji",
+      "saveFailed": "Vaši volbu se nepodařilo uložit v tomto zařízení.",
+      "statusOn": "Anonymní sdílení dat je zapnuté.",
+      "statusOff": "Anonymní sdílení dat je vypnuté.",
+      "turnOn": "Zapnout",
+      "turnOff": "Vypnout"
     }
   },
   "sk": {
@@ -166,6 +200,11 @@
       "dosing": "Dávkovanie",
       "dosingPlaceholder": "napr. 1-0-1-0",
       "remove": "Odstrániť",
+      "note": {
+        "toggle": "Pridať poznámku pre lekára",
+        "label": "Poznámka pre lekára",
+        "placeholder": "napr. točí sa mi po ňom hlava, večernú dávku občas vynechám..."
+      },
       "regimen": "Liečebný režim:",
       "cancel": "Zrušiť",
       "save": "Uložiť",
@@ -189,6 +228,18 @@
     },
     "uploads": {
       "unexpected": "Neočakávaná odpoveď servera"
+    },
+    "consent": {
+      "title": "Pomôžete zlepšiť lieky?",
+      "description": "Môžeme anonymne zdieľať vaše lieky a interakcie, ktoré lekár zistí, aby výskum mohol liečbu urobiť bezpečnejšou? Vaše meno, poznámky ani iné osobné údaje sa nikdy nezdieľajú.",
+      "changeLater": "Svoju voľbu môžete kedykoľvek zmeniť na hlavnej obrazovke.",
+      "yes": "Áno, zdieľať anonymne",
+      "no": "Nie, ďakujem",
+      "saveFailed": "Vašu voľbu sa nepodarilo uložiť v tomto zariadení.",
+      "statusOn": "Anonymné zdieľanie údajov je zapnuté.",
+      "statusOff": "Anonymné zdieľanie údajov je vypnuté.",
+      "turnOn": "Zapnúť",
+      "turnOff": "Vypnúť"
     }
   },
   "uk": {
@@ -230,6 +281,11 @@
       "dosing": "Дозування",
       "dosingPlaceholder": "напр. 1-0-1-0",
       "remove": "Видалити",
+      "note": {
+        "toggle": "Додати примітку для лікаря",
+        "label": "Примітка для лікаря",
+        "placeholder": "напр. від нього паморочиться голова, вечірню дозу іноді пропускаю..."
+      },
       "regimen": "Схема лікування:",
       "cancel": "Скасувати",
       "save": "Зберегти",
@@ -253,6 +309,18 @@
     },
     "uploads": {
       "unexpected": "Неочікувана відповідь сервера"
+    },
+    "consent": {
+      "title": "Допоможете покращити ліки?",
+      "description": "Чи можемо ми анонімно поширювати ваші ліки та взаємодії, які виявить лікар, щоб дослідження зробили лікування безпечнішим? Ваше ім'я, примітки та інші особисті дані ніколи не поширюються.",
+      "changeLater": "Свій вибір можна будь-коли змінити на головному екрані.",
+      "yes": "Так, поширювати анонімно",
+      "no": "Ні, дякую",
+      "saveFailed": "Не вдалося зберегти ваш вибір на цьому пристрої.",
+      "statusOn": "Анонімне поширення даних увімкнено.",
+      "statusOff": "Анонімне поширення даних вимкнено.",
+      "turnOn": "Увімкнути",
+      "turnOff": "Вимкнути"
     }
   }
 }

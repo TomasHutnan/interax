@@ -2,7 +2,16 @@ import secrets
 from datetime import datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Response
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    Header,
+    HTTPException,
+    Path,
+    Query,
+    Response,
+)
 from psycopg import Connection
 from psycopg.rows import DictRow
 from psycopg.types.json import Jsonb
@@ -33,6 +42,8 @@ class Upload(BaseModel):
     id: str
     uploaded_at: datetime
     expires_at: datetime
+    # The patient agreed to share anonymous data with the FHIR repository.
+    share: bool
     data: Any
 
 
@@ -41,6 +52,10 @@ def create_upload(
     data: Annotated[Any, Body()],
     conn: Annotated[Connection[DictRow], Depends(get_conn)],
     expiry: Annotated[UploadExpiry, Depends(get_upload_expiry)],
+    share: Annotated[
+        bool,
+        Query(description="Patient consents to sharing anonymous data"),
+    ] = False,
 ) -> UploadCreated:
     """Store any JSON body under a new random 6-digit code, deleted after UPLOAD_TTL.
 
@@ -50,9 +65,10 @@ def create_upload(
     for _ in range(_MAX_ATTEMPTS):
         code = f"{secrets.randbelow(1_000_000):06d}"
         row = conn.execute(
-            "INSERT INTO uploads (id, data, revoke_token_hash) VALUES (%s, %s, %s)"
+            "INSERT INTO uploads (id, data, revoke_token_hash, share_data)"
+            " VALUES (%s, %s, %s, %s)"
             " ON CONFLICT (id) DO NOTHING RETURNING id, uploaded_at",
-            (code, Jsonb(data), hash_token(revoke_token)),
+            (code, Jsonb(data), hash_token(revoke_token), share),
         ).fetchone()
         if row is not None:
             # Commit now rather than when the dependency closes, so a GET right after sees it.
@@ -74,7 +90,7 @@ def get_upload(
     _: Annotated[User, Depends(require_user)],
 ) -> Upload:
     row = conn.execute(
-        "SELECT id, data, uploaded_at FROM uploads"
+        "SELECT id, data, uploaded_at, share_data FROM uploads"
         " WHERE id = %s AND uploaded_at > now() - %s",
         (upload_id, settings.upload_ttl),
     ).fetchone()
@@ -84,6 +100,7 @@ def get_upload(
         id=row["id"],
         uploaded_at=row["uploaded_at"],
         expires_at=row["uploaded_at"] + settings.upload_ttl,
+        share=row["share_data"],
         data=row["data"],
     )
 

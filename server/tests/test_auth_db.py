@@ -118,7 +118,10 @@ def test_upload_flow(client, username):
     assert client.get(f"/api/uploads/{code}").status_code == 401
     # ...clinicians can.
     login(client, username)
-    assert client.get(f"/api/uploads/{code}").json()["data"] == {"prescriptions": []}
+    got = client.get(f"/api/uploads/{code}").json()
+    assert got["data"] == {"prescriptions": []}
+    # No consent given: sharing defaults to off.
+    assert got["share"] is False
     client.post("/api/auth/logout", headers=CSRF)
 
     # Revoking needs the token from the upload.
@@ -135,3 +138,13 @@ def test_upload_flow(client, username):
         ).status_code
         == 204
     )
+
+
+def test_upload_share_consent_is_stored(client, username):
+    created = client.post("/api/uploads?share=true", json={"prescriptions": []})
+    assert created.status_code == 201
+    upload = created.json()
+
+    login(client, username)
+    assert client.get(f"/api/uploads/{upload['id']}").json()["share"] is True
+    client.delete(f"/api/uploads/{upload['id']}", headers=CSRF)

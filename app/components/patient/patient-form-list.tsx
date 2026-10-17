@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { KeyRound, Pencil, Plus, Trash2, Undo2 } from "lucide-react";
-import { useForms, useUploads } from "@/lib/hooks/use-forms";
+import { useForms, useShareConsent, useUploads } from "@/lib/hooks/use-forms";
 import { useNow } from "@/lib/hooks/use-now";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
 import { deleteForm, deleteUpload, saveUpload, Upload } from "@/lib/storage";
@@ -18,12 +18,14 @@ import { PatientForm } from "@/lib/typings";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
+import { ShareConsentToggle } from "./share-consent-dialog";
 
 export default function PatientFormList() {
   const t = useTranslations("patient.list");
   const router = useRouter();
   const forms = useForms();
   const uploads = useUploads();
+  const consent = useShareConsent();
   const [busy, setBusy] = useState(false);
   const ids = useMemo(
     () =>
@@ -80,7 +82,7 @@ export default function PatientFormList() {
     setBusy(true);
     try {
       toast
-        .promise(uploadForm(forms![id]), {
+        .promise(uploadForm(forms![id], consent === true), {
           loading: t("toasts.generating"),
           success: t("toasts.codeCreated"),
           error: (err) =>
@@ -135,6 +137,7 @@ export default function PatientFormList() {
           {t("create")}
         </Button>
       </div>
+      <ShareConsentToggle />
       {ids.length === 0 && (
         <p className={"py-8 text-center text-muted-foreground"}>{t("empty")}</p>
       )}

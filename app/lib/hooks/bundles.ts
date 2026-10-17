@@ -75,5 +75,7 @@ export function useGetInteractions() {
 }
 
 export function useForm(code: string) {
-  return useSWRFetch<{ data: PatientForm }>(`/api/uploads/${code}`);
+  return useSWRFetch<{ data: PatientForm; share?: boolean }>(
+    `/api/uploads/${code}`,
+  );
 }

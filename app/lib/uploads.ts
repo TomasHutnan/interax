@@ -50,6 +50,7 @@ function prepareForm(form: PatientForm): PatientForm {
         mg: (p.mg ?? "").trim(),
         subs: (p.subs ?? []).map((s) => (s ?? "").trim()),
         usage: (p.usage ?? "").trim(),
+        note: (p.note ?? "").trim(),
       })),
     treatment: {
       name: (form.treatment.name ?? "").trim(),
@@ -60,9 +61,13 @@ function prepareForm(form: PatientForm): PatientForm {
 
 /**
  * Uploads the form, returning the upload (code, timestamps and revoke token) assigned by the server.
+ * `share` records whether the patient agreed to share anonymous data with the repository.
  */
-export async function uploadForm(form: PatientForm): Promise<Upload> {
-  const res = await baseFetcher("/api/uploads", {
+export async function uploadForm(
+  form: PatientForm,
+  share: boolean,
+): Promise<Upload> {
+  const res = await baseFetcher(`/api/uploads?share=${share}`, {
     method: "POST",
     body: JSON.stringify(prepareForm(form)),
   });
