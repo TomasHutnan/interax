@@ -1,0 +1,118 @@
+{
+  "en": {
+    "photo": {
+      "1": "Putting on our reading glasses...",
+      "2": "Deciphering the doctor's handwriting. This may take a while.",
+      "3": "Squinting at the small print...",
+      "4": "Asking the pills to say cheese...",
+      "5": "Counting tablets so you don't have to...",
+      "6": "Translating from doctor into human...",
+      "7": "Almost there, the pixels are cooperating..."
+    },
+    "voice": {
+      "1": "Listening carefully...",
+      "2": "Turning up the hearing aid...",
+      "3": "Writing it all down, word by word...",
+      "4": "Untangling Latin drug names...",
+      "5": "Making sure we heard \"twice a day\", not \"twice a week\"...",
+      "6": "Nodding politely while we think...",
+      "7": "Just dotting the i's..."
+    },
+    "interactions": {
+      "1": "Introducing your medications to each other...",
+      "2": "Checking who doesn't get along with whom...",
+      "3": "Leafing through the pharmacology archives...",
+      "4": "Asking the molecules nicely...",
+      "5": "Reading the fine print so you don't have to...",
+      "6": "Playing matchmaker, but in reverse...",
+      "7": "Cross-checking every pair. Twice."
+    }
+  },
+  "cs": {
+    "photo": {
+      "1": "Nasazujeme brýle na čtení...",
+      "2": "Luštíme lékařský rukopis. Může to chvíli trvat.",
+      "3": "Mžouráme na drobné písmo...",
+      "4": "Prosíme prášky, ať se usmějí do foťáku...",
+      "5": "Počítáme tablety, abyste nemuseli vy...",
+      "6": "Překládáme z lékařštiny do češtiny...",
+      "7": "Už to bude, pixely spolupracují..."
+    },
+    "voice": {
+      "1": "Pozorně posloucháme...",
+      "2": "Zesilujeme naslouchátko...",
+      "3": "Zapisujeme slovo od slova...",
+      "4": "Rozmotáváme latinské názvy léků...",
+      "5": "Ověřujeme, že jsme slyšeli „dvakrát denně“, ne „dvakrát týdně“...",
+      "6": "Zdvořile přikyvujeme, zatímco přemýšlíme...",
+      "7": "Ještě dotahujeme poslední detaily..."
+    },
+    "interactions": {
+      "1": "Představujeme vaše léky jeden druhému...",
+      "2": "Zjišťujeme, kdo s kým nevychází...",
+      "3": "Listujeme farmakologickými archivy...",
+      "4": "Zdvořile se vyptáváme molekul...",
+      "5": "Čteme drobné písmo, abyste nemuseli vy...",
+      "6": "Hrajeme si na dohazovače, jen obráceně...",
+      "7": "Kontrolujeme každou dvojici. Dvakrát."
+    }
+  },
+  "sk": {
+    "photo": {
+      "1": "Nasadzujeme si okuliare na čítanie...",
+      "2": "Lúštime lekársky rukopis. Môže to chvíľu trvať.",
+      "3": "Žmúrime na drobné písmo...",
+      "4": "Prosíme tabletky, nech sa usmejú do foťáku...",
+      "5": "Počítame tabletky, aby ste nemuseli vy...",
+      "6": "Prekladáme z lekárčiny do slovenčiny...",
+      "7": "Už to bude, pixely spolupracujú..."
+    },
+    "voice": {
+      "1": "Pozorne počúvame...",
+      "2": "Zosilňujeme načúvací prístroj...",
+      "3": "Zapisujeme slovo po slove...",
+      "4": "Rozmotávame latinské názvy liekov...",
+      "5": "Overujeme, že sme počuli „dvakrát denne“, nie „dvakrát týždenne“...",
+      "6": "Zdvorilo prikyvujeme, kým premýšľame...",
+      "7": "Ešte doťahujeme posledné detaily..."
+    },
+    "interactions": {
+      "1": "Predstavujeme vaše lieky jeden druhému...",
+      "2": "Zisťujeme, kto s kým nevychádza...",
+      "3": "Listujeme vo farmakologických archívoch...",
+      "4": "Zdvorilo sa vypytujeme molekúl...",
+      "5": "Čítame drobné písmo, aby ste nemuseli vy...",
+      "6": "Hráme sa na dohadzovača, len naopak...",
+      "7": "Kontrolujeme každú dvojicu. Dvakrát."
+    }
+  },
+  "uk": {
+    "photo": {
+      "1": "Надягаємо окуляри для читання...",
+      "2": "Розшифровуємо лікарський почерк. Це може зайняти трохи часу.",
+      "3": "Мружимося на дрібний шрифт...",
+      "4": "Просимо пігулки посміхнутися в камеру...",
+      "5": "Рахуємо таблетки, щоб вам не довелося...",
+      "6": "Перекладаємо з лікарської на людську...",
+      "7": "Майже готово, пікселі співпрацюють..."
+    },
+    "voice": {
+      "1": "Уважно слухаємо...",
+      "2": "Підкручуємо слуховий апарат...",
+      "3": "Записуємо слово за словом...",
+      "4": "Розплутуємо латинські назви ліків...",
+      "5": "Перевіряємо, що почули «двічі на день», а не «двічі на тиждень»...",
+      "6": "Ввічливо киваємо, поки думаємо...",
+      "7": "Доводимо останні дрібниці..."
+    },
+    "interactions": {
+      "1": "Знайомимо ваші ліки між собою...",
+      "2": "З'ясовуємо, хто з ким не ладнає...",
+      "3": "Гортаємо фармакологічні архіви...",
+      "4": "Ввічливо розпитуємо молекули...",
+      "5": "Читаємо дрібний шрифт, щоб вам не довелося...",
+      "6": "Граємо у сваху, тільки навпаки...",
+      "7": "Перевіряємо кожну пару. Двічі."
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { Send } from "lucide-react";
 import { Interaction, MPatientForm } from "@/lib/typings";
 import { useGetInteractions } from "@/lib/hooks/bundles";
+import { useLoadingPhrase } from "@/lib/hooks/use-loading-phrase";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
 import {
   interactionInputs,
@@ -69,6 +70,7 @@ function Internal({
 
   const all = cached ?? fetched;
   const loading = inputs.complete && !all && !error;
+  const phrase = useLoadingPhrase("interactions", loading);
   // Indices into `all`, so the checkboxes stay stable.
   const observed = useMemo(
     () =>
@@ -131,9 +133,15 @@ function Internal({
         {!inputs.complete ? (
           <p className="text-sm text-muted-foreground">{t("incomplete")}</p>
         ) : loading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div
+            className="flex items-center gap-2 text-sm text-muted-foreground"
+            aria-live="polite"
+          >
             <Spinner />
-            {t("checking")}
+            <span>
+              {t("checking")}
+              {phrase && <span className="block italic">{phrase}</span>}
+            </span>
           </div>
         ) : error ? (
           <p className="text-sm text-destructive">{t("error")}</p>

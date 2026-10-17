@@ -5,6 +5,7 @@ import doctor from "@/messages/doctor.json";
 import errors from "@/messages/errors.json";
 import home from "@/messages/home.json";
 import interactions from "@/messages/interactions.json";
+import loading from "@/messages/loading.json";
 import menu from "@/messages/menu.json";
 import patient from "@/messages/patient.json";
 import preferences from "@/messages/preferences.json";
@@ -20,6 +21,7 @@ const NAMESPACES = {
   errors,
   home,
   interactions,
+  loading,
   menu,
   patient,
   preferences,
@@ -85,4 +87,9 @@ export function tr(key: string, values?: TranslationValues): string {
   return (
     translator as unknown as (k: string, v?: TranslationValues) => string
   )(key, values);
+}
+
+/** Untranslated message subtree (e.g. a group of phrases), outside React components. */
+export function trRaw(key: string): unknown {
+  return (translator as unknown as { raw: (k: string) => unknown }).raw(key);
 }

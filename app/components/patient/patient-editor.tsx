@@ -16,6 +16,7 @@ import { dictateMeds } from "@/lib/dictate";
 import { useRecorder } from "@/lib/hooks/use-recorder";
 import { getErrorMessage } from "@/lib/hooks/use-swr-fetch";
 import { tr } from "@/lib/i18n";
+import { phraseToast } from "@/lib/loading-phrases";
 import { Button } from "../ui/button";
 import { toast } from "../ui/toast";
 import RegimenInput from "../form/regimen-input";
@@ -83,15 +84,13 @@ export default function PatientEditor({
 
     setBusy(true);
     try {
-      toast
-        .promise(scanMeds(form.prescriptions, file), {
-          loading: t("toasts.readingPhoto"),
-          success: t("toasts.scanned"),
-          error: (err) =>
-            getErrorMessage(
-              err instanceof Error ? err : new Error(String(err)),
-            ),
-        })
+      phraseToast(scanMeds(form.prescriptions, file), {
+        group: "photo",
+        loading: t("toasts.readingPhoto"),
+        success: t("toasts.scanned"),
+        error: (err) =>
+          getErrorMessage(err instanceof Error ? err : new Error(String(err))),
+      })
         .then((prescriptions) =>
           setForm((prev) => ({ ...prev, prescriptions })),
         )
@@ -124,15 +123,15 @@ export default function PatientEditor({
 
         setBusy(true);
         try {
-          toast
-            .promise(dictateMeds(form.prescriptions, result.wav), {
-              loading: t("toasts.transcribing"),
-              success: t("toasts.dictated"),
-              error: (err) =>
-                getErrorMessage(
-                  err instanceof Error ? err : new Error(String(err)),
-                ),
-            })
+          phraseToast(dictateMeds(form.prescriptions, result.wav), {
+            group: "voice",
+            loading: t("toasts.transcribing"),
+            success: t("toasts.dictated"),
+            error: (err) =>
+              getErrorMessage(
+                err instanceof Error ? err : new Error(String(err)),
+              ),
+          })
             .then((prescriptions) =>
               setForm((prev) => ({ ...prev, prescriptions })),
             )

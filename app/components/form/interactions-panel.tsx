@@ -6,6 +6,7 @@ import { useGetInteractions } from "@/lib/hooks/bundles";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
 import { useTranslations } from "next-intl";
+import { useLoadingPhrase } from "@/lib/hooks/use-loading-phrase";
 import {
   interactionInputs,
   meetsThreshold,
@@ -117,6 +118,8 @@ function Internal({
 }) {
   const t = useTranslations("interactions");
   const { trigger, isMutating, data } = useGetInteractions();
+  const loading = isMutating || !data;
+  const phrase = useLoadingPhrase("interactions", loading);
 
   // Keyed by the substance list itself, so editing e.g. a usage doesn't re-check.
   useEffect(() => {
@@ -131,11 +134,17 @@ function Internal({
     return () => clearTimeout(timeout);
   }, [subsKey, trigger, onLoaded]);
 
-  if (isMutating || !data)
+  if (loading)
     return (
-      <div className="w-full flex flex-col items-center gap-2 pt-4 text-sm text-muted-foreground">
+      <div
+        className="w-full flex flex-col items-center gap-2 pt-4 text-sm text-muted-foreground"
+        aria-live="polite"
+      >
         <Spinner />
-        {t("panel.checking")}
+        <span className="font-medium text-foreground">
+          {t("panel.checking")}
+        </span>
+        {phrase && <span className="text-center italic">{phrase}</span>}
       </div>
     );
 
