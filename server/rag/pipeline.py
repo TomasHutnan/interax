@@ -193,105 +193,181 @@ def _enforce_max_words(text: str, max_words: int = 10) -> str:
     return " ".join(words[:max_words]).rstrip(".,;:") + "."
 
 
-def _persist_fhir_async(
-    resolved: list[_ResolvedMed],
-    adjudications: dict[str, _AdjudicatedPair],
-) -> None:
-    """Persist MedicationStatement and DetectedIssue resources with an ephemeral session UUID."""
+_FHIR_SEVERITY_MAP = {
+    "major": "high",
+    "high": "high",
+    "critical": "high",
+    "contraindicated": "high",
+    "moderate": "moderate",
+    "medium": "moderate",
+    "minor": "low",
+    "low": "low",
+}
+
+
+def _match_med_ref(substance: str, sub_to_ref: dict[str, str]) -> str | None:
+    s_norm = substance.strip().lower()
+    if not s_norm:
+        return None
+    if s_norm in sub_to_ref:
+        return sub_to_ref[s_norm]
+    for key, ref in sub_to_ref.items():
+        if key and (s_norm in key or key in s_norm):
+            return ref
+    return None
+
+
+def upload_to_fhir(
+    meds: list[dict[str, object]],
+    interactions: list[tuple[str, str, str, str]],
+) -> dict[str, object]:
+    """Upload prescriptions (MedicationStatement) and interactions (DetectedIssue) to IRIS FHIR R4."""
+    session_uuid = str(uuid.uuid4())
+    subject_ref = f"Patient/{session_uuid}"
+    base_url = f"http://{IRIS_HOST}:{IRIS_HTTP_PORT}/csp/healthshare/fhir/r4"
+    auth = HTTPBasicAuth(IRIS_USER, IRIS_PASSWORD)
+    headers = {
+        "Content-Type": "application/fhir+json",
+        "Accept": "application/fhir+json",
+        "Prefer": "return=representation",
+    }
+
+    conn = _get_conn()
     try:
-        session_uuid = str(uuid.uuid4())
-        subject_ref = f"Patient/{session_uuid}"
-        base_url = f"http://{IRIS_HOST}:{IRIS_HTTP_PORT}/csp/healthshare/fhir/r4"
-        auth = HTTPBasicAuth(IRIS_USER, IRIS_PASSWORD)
-        headers = {
-            "Content-Type": "application/fhir+json",
-            "Accept": "application/fhir+json",
-            "Prefer": "return=representation",
-        }
+        queries = []
+        for m in meds:
+            drug = str(m.get("drug") or "").strip()
+            subs = [str(s).strip() for s in (m.get("subs") or []) if str(s).strip()]
+            queries.append(drug or (subs[0] if subs else "Unknown"))
+        resolved_list = _resolve_medications(conn, queries) if queries else []
+    finally:
+        conn.close()
 
-        sub_to_ref: dict[str, str] = {}
-        for med in resolved:
-            coding = [
+    sub_to_ref: dict[str, str] = {}
+    created_meds: list[dict[str, object]] = []
+
+    for m, resolved in zip(meds, resolved_list):
+        drug = str(m.get("drug") or resolved.brand_name).strip()
+        mg = str(m.get("mg") or "").strip()
+        subs = [str(s).strip() for s in (m.get("subs") or []) if str(s).strip()]
+        usage = str(m.get("usage") or "").strip()
+
+        coding = [
+            {
+                "system": "https://sukl.cz/terminology/CodeSystem/dlp",
+                "code": resolved.sukl_code,
+                "display": f"{resolved.brand_name} {resolved.strength}".strip() or drug,
+            }
+        ]
+        if resolved.atc_code:
+            coding.append(
                 {
-                    "system": "https://sukl.cz/terminology/CodeSystem/dlp",
-                    "code": med.sukl_code,
-                    "display": f"{med.brand_name} {med.strength}".strip(),
+                    "system": "http://www.whocc.no/atc",
+                    "code": resolved.atc_code,
+                    "display": resolved.atc_name or resolved.canonical_name,
                 }
-            ]
-            if med.atc_code:
-                coding.append(
-                    {
-                        "system": "http://www.whocc.no/atc",
-                        "code": med.atc_code,
-                        "display": med.atc_name or med.canonical_name,
-                    }
-                )
-            ms_payload = {
-                "resourceType": "MedicationStatement",
-                "status": "active",
-                "medicationCodeableConcept": {
-                    "coding": coding,
-                    "text": f"{med.brand_name} ({med.active_substance})",
-                },
-                "subject": {"reference": subject_ref},
-            }
-            r = requests.post(
-                f"{base_url}/MedicationStatement",
-                auth=auth,
-                headers=headers,
-                json=ms_payload,
-                timeout=10,
             )
-            if r.ok:
-                ms_id = r.json().get("id", "unknown")
-                sub_to_ref[med.canonical_name.lower()] = f"MedicationStatement/{ms_id}"
 
-        for pair_key, adj in adjudications.items():
-            parts = [p.strip() for p in pair_key.split("+")]
-            implicated = [
-                {"reference": sub_to_ref[p.lower()], "display": p}
-                for p in parts
-                if p.lower() in sub_to_ref
-            ]
-            di_payload = {
-                "resourceType": "DetectedIssue",
-                "status": "final",
-                "severity": "high",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                            "code": "DRG",
-                            "display": "Drug Interaction Alert",
-                        }
-                    ]
-                },
-                "subject": {"reference": subject_ref},
-                "implicated": implicated,
-                "detail": (
-                    f"[{pair_key}] Pathophysiological Mechanism: {adj.pathophysiological_mechanism} | "
-                    f"Clinical Consequence: {adj.clinical_consequence}"
-                ),
+        subs_label = ", ".join(subs) if subs else resolved.active_substance
+        ms_payload: dict[str, object] = {
+            "resourceType": "MedicationStatement",
+            "status": "active",
+            "medicationCodeableConcept": {
+                "coding": coding,
+                "text": f"{drug} ({subs_label})" if subs_label else drug,
+            },
+            "subject": {"reference": subject_ref},
+        }
+        dosage_parts = [p for p in [f"{mg} mg" if mg and mg.replace(".", "").replace("/", "").isdigit() else mg, usage] if p]
+        if dosage_parts:
+            ms_payload["dosage"] = [{"text": " | ".join(dosage_parts)}]
+
+        r = requests.post(
+            f"{base_url}/MedicationStatement",
+            auth=auth,
+            headers=headers,
+            json=ms_payload,
+            timeout=10,
+        )
+        r.raise_for_status()
+        ms_id = str(r.json().get("id", "unknown"))
+        ref = f"MedicationStatement/{ms_id}"
+
+        for key in [drug, resolved.canonical_name, resolved.active_substance, *subs]:
+            if key and key.strip():
+                sub_to_ref[key.strip().lower()] = ref
+
+        created_meds.append(
+            {
+                "id": ms_id,
+                "reference": ref,
+                "drug": drug,
+                "sukl_code": resolved.sukl_code,
+                "status_code": r.status_code,
             }
+        )
+
+    created_issues: list[dict[str, object]] = []
+    for sub1, sub2, description, severity in interactions:
+        fhir_severity = _FHIR_SEVERITY_MAP.get(str(severity).strip().lower(), "high")
+        implicated = []
+        for s in (sub1, sub2):
+            matched_ref = _match_med_ref(s, sub_to_ref)
+            if matched_ref:
+                implicated.append({"reference": matched_ref, "display": s})
+
+        di_payload: dict[str, object] = {
+            "resourceType": "DetectedIssue",
+            "status": "final",
+            "severity": fhir_severity,
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                        "code": "DRG",
+                        "display": "Drug Interaction Alert",
+                    }
+                ]
+            },
+            "subject": {"reference": subject_ref},
+            "implicated": implicated,
+            "detail": f"[{sub1} + {sub2}] ({severity}) {description}".strip(),
+        }
+        r_di = requests.post(
+            f"{base_url}/DetectedIssue",
+            auth=auth,
+            headers=headers,
+            json=di_payload,
+            timeout=10,
+        )
+        if r_di.status_code == 400 and "UnexpectedPropertyName" in r_di.text:
+            r4_payload = {k: v for k, v in di_payload.items() if k != "subject"}
+            r4_payload["patient"] = di_payload["subject"]
             r_di = requests.post(
                 f"{base_url}/DetectedIssue",
                 auth=auth,
                 headers=headers,
-                json=di_payload,
+                json=r4_payload,
                 timeout=10,
             )
-            if r_di.status_code == 400 and "UnexpectedPropertyName" in r_di.text:
-                r4_payload = {k: v for k, v in di_payload.items() if k != "subject"}
-                r4_payload["patient"] = di_payload["subject"]
-                requests.post(
-                    f"{base_url}/DetectedIssue",
-                    auth=auth,
-                    headers=headers,
-                    json=r4_payload,
-                    timeout=10,
-                )
-    except Exception as exc:
-        log.warning("FHIR persistence skipped or failed: %s", exc)
+        r_di.raise_for_status()
+        di_id = str(r_di.json().get("id", "unknown"))
+        created_issues.append(
+            {
+                "id": di_id,
+                "reference": f"DetectedIssue/{di_id}",
+                "substances": [sub1, sub2],
+                "severity": fhir_severity,
+                "status_code": r_di.status_code,
+            }
+        )
+
+    return {
+        "session_uuid": session_uuid,
+        "subject_reference": subject_ref,
+        "medication_statements": created_meds,
+        "detected_issues": created_issues,
+    }
 
 
 def check_rag_interactions(substances: list[str]) -> list[RagInteraction]:
@@ -425,9 +501,6 @@ def check_rag_interactions(substances: list[str]) -> list[RagInteraction]:
                     str(val["clinical_consequence"]), 10
                 ),
             )
-
-    # 5. Persist MedicationStatement & DetectedIssue to IRIS FHIR R4 Server
-    _persist_fhir_async(resolved, adjudications)
 
     # Map back to RagInteraction objects with both fields preserved
     results: list[RagInteraction] = []
