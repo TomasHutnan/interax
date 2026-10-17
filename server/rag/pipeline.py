@@ -40,19 +40,23 @@ EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 SYSTEM_PROMPT = (
     "You are a deterministic clinical pharmacology analyzer. "
-    "Analyze the provided normalized medications, deterministic interaction records, and retrieved pharmacogenomic guideline chunks. "
+    "Analyze the provided normalized medications, deterministic interaction records, and retrieved pharmacogenomic guideline chunks, using established clinical pharmacology when mechanism_text only states the risk level. "
     "Do not perform conversational synthesis, do not provide actionable suggestions, and do not include mitigation planning or clinical advice. "
     'Produce one output object per interaction pairing found in ddinter_interactions, keyed by "SubstanceA + SubstanceB". '
     'Each interaction pairing object MUST contain ONLY two fields: "pathophysiological_mechanism" and "clinical_consequence". '
     "Each field value MUST be at most 10 concise words (<= 10 words). "
+    'Whenever an interaction has no known mechanism or consequence (e.g., risk_level is "Unknown" with no known mechanism), output an empty string "" instead of stating "unknown", "unknown mechanism", "unspecified", or similar placeholder text. '
     "Output ONLY valid JSON in this exact shape:\n"
     "{\n"
     '  "SubstanceA + SubstanceB": {\n'
-    '    "pathophysiological_mechanism": "<max 10 concise words>",\n'
-    '    "clinical_consequence": "<max 10 concise words>"\n'
+    '    "pathophysiological_mechanism": "<max 10 concise words, or empty string>",\n'
+    '    "clinical_consequence": "<max 10 concise words, or empty string>"\n'
     "  }\n"
     "}"
 )
+
+
+
 
 
 @dataclass
@@ -186,11 +190,21 @@ def _resolve_medications(conn, inputs: list[str]) -> list[_ResolvedMed]:
     return resolved
 
 
+_UNKNOWN_RE = re.compile(
+    r"^(unknown|not\s+available|unavailable|not\s+specified|unspecified|no\s+available\s+info\w*|no\s+information\b.*|n/?a|none)\b",
+    re.IGNORECASE,
+)
+
+
 def _enforce_max_words(text: str, max_words: int = 10) -> str:
-    words = text.strip().split()
+    cleaned = text.strip()
+    if not cleaned or _UNKNOWN_RE.match(cleaned) or "unknown" in cleaned.lower():
+        return ""
+    words = cleaned.split()
     if len(words) <= max_words:
-        return text.strip()
+        return cleaned
     return " ".join(words[:max_words]).rstrip(".,;:") + "."
+
 
 
 _FHIR_SEVERITY_MAP = {
@@ -508,8 +522,13 @@ def check_rag_interactions(substances: list[str]) -> list[RagInteraction]:
         pair_key = d["pairing"]
         rev_key = f"{d['substance_b']} + {d['substance_a']}"
         adj = adjudications.get(pair_key) or adjudications.get(rev_key)
-        mech = adj.pathophysiological_mechanism if adj else d["mechanism_text"]
-        conseq = adj.clinical_consequence if adj else f"{d['risk_level']} interaction."
+        mech = (
+            adj.pathophysiological_mechanism
+            if adj is not None
+            else _enforce_max_words(d["mechanism_text"], 10)
+        )
+        conseq = adj.clinical_consequence if adj is not None else ""
+
 
         in_1 = canon_to_input.get(d["substance_a"].lower(), d["substance_a"])
         in_2 = canon_to_input.get(d["substance_b"].lower(), d["substance_b"])
