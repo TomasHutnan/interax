@@ -7,6 +7,7 @@ from app.config import settings
 from app.db import create_pool
 from app.routers import (
     auth,
+    dictate,
     health,
     interactions,
     medications,
@@ -37,6 +38,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(dictate.router)
 app.include_router(health.router)
 app.include_router(interactions.router)
 app.include_router(medications.router)

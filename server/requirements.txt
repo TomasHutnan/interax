@@ -5,3 +5,4 @@ requests
 dotenv
 pydantic
 psycopg[binary,pool]
+faster-whisper
