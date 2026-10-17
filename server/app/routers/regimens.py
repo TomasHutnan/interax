@@ -3,19 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query
 from psycopg import Connection
 from psycopg.rows import DictRow
-from pydantic import BaseModel
 
 from app.db import get_conn
 
 router = APIRouter(prefix="/regimens", tags=["regimens"])
-
-
-class RegimenComponent(BaseModel):
-    concept_name: str
-
-
-class Regimen(BaseModel):
-    concept_name: str
 
 
 def _escape_like(value: str) -> str:
@@ -26,7 +17,7 @@ def _escape_like(value: str) -> str:
 def find_regimens(
     conn: Annotated[Connection[DictRow], Depends(get_conn)],
     text: str = "",
-) -> list[Regimen]:
+) -> list[str]:
     """Regimens whose name contains `text` (case-insensitive); all regimens if empty.
 
     Ordered by exact match, then prefix match, then name.
@@ -46,14 +37,14 @@ def find_regimens(
         """,
         {"contains": f"%{query}%", "exact": query, "prefix": f"{query}%"},
     ).fetchall()
-    return [Regimen(**row) for row in rows]
+    return [row["concept_name"] for row in rows]
 
 
 @router.get("/components")
 def regimen_components(
     name: Annotated[str, Query(min_length=1)],
     conn: Annotated[Connection[DictRow], Depends(get_conn)],
-) -> list[RegimenComponent]:
+) -> list[str]:
     """Drugs (HemOnc 'Component' concepts) used in a regimen, looked up by name.
 
     Matching is case-insensitive and exact. The name is a query parameter because
@@ -80,4 +71,4 @@ def regimen_components(
         )
 
     rows = conn.execute("SELECT * FROM regimen_components(%s)", (name,)).fetchall()
-    return [RegimenComponent(**row) for row in rows]
+    return [row["concept_name"] for row in rows]

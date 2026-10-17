@@ -10,6 +10,7 @@
 #
 # These are read from the repo-root .env (a variable already set in the shell wins):
 #   UNSLOTH_BASE_URL, UNSLOTH_MODEL, UNSLOTH_API_KEY  - OCR model endpoint (must be reachable from Azure)
+#   RXLABEL_BASE_URL, RXLABEL_API_KEY                 - drug-interaction API used by /api/interactions
 #   CORS_ORIGINS                                      - comma-separated frontend origins (optional)
 #
 # What gets created in the resource group:
@@ -81,7 +82,7 @@ function dotenv_get --argument-names key
     string trim -- $value | string trim -c '"\''
 end
 
-for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY CORS_ORIGINS
+for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY CORS_ORIGINS
     set -q $key; and continue
     set -l value (dotenv_get $key)
     test -n "$value"; and set -gx $key $value
@@ -91,6 +92,8 @@ step "OCR model settings"
 echo "UNSLOTH_BASE_URL = "(set -q UNSLOTH_BASE_URL; and echo $UNSLOTH_BASE_URL; or echo "(not set)")
 echo "UNSLOTH_MODEL    = "(set -q UNSLOTH_MODEL; and echo $UNSLOTH_MODEL; or echo "(not set)")
 echo "UNSLOTH_API_KEY  = "(set -q UNSLOTH_API_KEY; and echo "(set, hidden)"; or echo "(not set)")
+echo "RXLABEL_BASE_URL = "(set -q RXLABEL_BASE_URL; and echo $RXLABEL_BASE_URL; or echo "(not set)")
+echo "RXLABEL_API_KEY  = "(set -q RXLABEL_API_KEY; and echo "(set, hidden)"; or echo "(not set)")
 
 step "Hashing build folders"
 set -l DB_TAG (context_hash ./database)
@@ -187,6 +190,11 @@ if set -q UNSLOTH_API_KEY
     set -a server_secrets unsloth-api-key=$UNSLOTH_API_KEY
     set -a server_env UNSLOTH_API_KEY=secretref:unsloth-api-key
 end
+set -q RXLABEL_BASE_URL; and set -a server_env RXLABEL_BASE_URL=$RXLABEL_BASE_URL
+if set -q RXLABEL_API_KEY
+    set -a server_secrets rxlabel-api-key=$RXLABEL_API_KEY
+    set -a server_env RXLABEL_API_KEY=secretref:rxlabel-api-key
+end
 
 set -l SERVER_IMAGE $ACR_SERVER/interax-server:$SERVER_TAG
 if az containerapp show --name $SERVER_APP --resource-group $RG -o none 2>/dev/null
@@ -230,5 +238,12 @@ if not set -q UNSLOTH_BASE_URL
     echo
     echo "warning: UNSLOTH_BASE_URL not set; /scan will try 127.0.0.1:8000 inside the"
     echo "container and fail. Set it to a publicly reachable model endpoint and re-run."
+    set_color normal
+end
+
+if not set -q RXLABEL_BASE_URL
+    set_color yellow
+    echo
+    echo "warning: RXLABEL_BASE_URL not set; /api/interactions will fail. Add it to .env and re-run."
     set_color normal
 end
