@@ -4,6 +4,8 @@
 
 **From a photo of a pill box to a doctor-ready, interaction-checked medication list in about a minute.**
 
+*The application is fully accessible according to WAI-ARIA standards.*
+
 Built for the **PillGaze** challenge at Rakathon.
 
 ### [🚀 Live demo: interax.hutnan.dev](https://interax.hutnan.dev/)
@@ -161,6 +163,13 @@ flowchart TD
 | **Interactions** | If `IRIS_HOST` is set, the InterSystems IRIS pipeline normalises names to SÚKL/INN/ATC and pulls DDInter severity rows. It also retrieves CPIC pharmacogenomic guidance by vector search (`all-MiniLM-L6-v2`, `VECTOR_DOT_PRODUCT`), and an LLM writes the explanations. Without IRIS, it falls back to the RxLabel API. |
 | **PIN sessions** | Short-lived, revocable 6-digit codes. Doctors use server-side sessions with an HttpOnly cookie and CSRF protection. |
 
+### Data Sources
+The processing pipeline relies on the following external databases and ontologies for clinical entity resolution and interaction screening:
+- **[SÚKL DLP](https://opendata.sukl.cz/?q=katalog/databaze-lecivych-pripravku-dlp)**: Utilized for matching extracted drug names to canonical active substances.
+- **[HemOnc Ontology (Athena)](https://athena.ohdsi.org/search-terms/start)**: Downloaded and integrated for referencing oncology regimens and breaking them down into respective component drugs.
+- **[DDInter](https://ddinter.scbdd.com/download/)**: Queried to identify and rank adverse drug-drug interactions.
+- **[CPIC Guidelines](https://www.clinpgx.org/cpic/guidelines)**: Referenced via vector search to explain severe adverse interactions on a physiological and pharmacogenomic level.
+
 ### Tech stack
 
 - **Frontend:** Next.js 16, React 19, Tailwind CSS, Base UI
@@ -193,18 +202,6 @@ cookie is first-party. The API docs are on <http://localhost:8080/docs>.
 
 Doctor accounts are created only with `app.manage create-user`; the patient side needs no account.
 
-### Regenerating the screenshots
-
-The screenshots are taken from a running instance (by default the live site) with Playwright.
-The script fakes the microphone with a Czech `say -v Zuzana` recording, so it needs macOS. When it
-finishes, it revokes the PIN it created and never sends anything to FHIR.
-
-```sh
-pip install playwright && playwright install chromium
-INTERAX_DOCTOR_USER=<user> INTERAX_DOCTOR_PASSWORD=<password> \
-    python docs/screenshots/capture.py [--url http://localhost:3000] [--headed]
-```
-
 ## Deploying to Azure
 
 ```fish
@@ -213,31 +210,4 @@ fish deploy/azure.fish
 
 Creates/updates three Container Apps: `interax` (the public web app), `interax-server`
 (internal only) and `interax-db` (internal only). See the script header for the `.env`
-settings it reads. The public URL is `https://interax.<environment-domain>`.
-
-<details>
-<summary><b>A nicer URL (custom domain)</b></summary>
-
-The `<random>.swedencentral.azurecontainerapps.io` part comes from the Container Apps
-environment and can't be changed; only the first label (the app name, `interax`) can.
-For a real name you need a domain (~10 €/year, e.g. from Cloudflare or Porkbun; Azure
-doesn't sell domains through this subscription). Container Apps then serves it with a free,
-auto-renewing managed certificate:
-
-```fish
-set FQDN (az containerapp show -n interax -g rg-team89 --query properties.configuration.ingress.fqdn -o tsv)
-az containerapp show -n interax -g rg-team89 --query properties.customDomainVerificationId -o tsv
-# At the DNS provider, for app.example.com:
-#   CNAME  app          -> $FQDN
-#   TXT    asuid.app    -> <the verification id above>
-az containerapp hostname add  -n interax -g rg-team89 --hostname app.example.com
-az containerapp hostname bind -n interax -g rg-team89 --hostname app.example.com \
-    --environment aca-team89-sandbox --validation-method CNAME
-```
-
-For an apex domain (`example.com`), use an A record to the environment's static IP and
-`--validation-method HTTP` instead. The hackathon sandbox may forbid custom domains or
-managed certificates by policy; if `hostname bind` is denied, that's why. Free subdomain
-services (DuckDNS, etc.) usually can't host the `asuid` TXT record, so they don't work here.
-
-</details>
+settings it reads. The public URL is `https://interax.hutnan.dev`.
