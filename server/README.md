@@ -43,6 +43,7 @@ server/
 
 All settings come from the **repo-root `.env`** (shared with the `db` service; see `.env.example`).
 
+<<<<<<< HEAD
 | Variable                                                 | Used for                                                          |
 | -------------------------------------------------------- | ----------------------------------------------------------------- |
 | `DATABASE_URL`                                           | Postgres connection (required)                                    |
@@ -50,6 +51,12 @@ All settings come from the **repo-root `.env`** (shared with the `db` service; s
 | `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint                                                |
 | `WHISPER_MODEL`                                          | Local Whisper model for `/dictate` (default `small`)              |
 | `WHISPER_LANGUAGE`                                       | Spoken language (default `cs`; empty = auto-detect)               |
+=======
+| Variable                                                 | Used for                       |
+| -------------------------------------------------------- | ------------------------------ |
+| `DATABASE_URL`                                           | Postgres connection (required) |
+| `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint             |
+>>>>>>> c24bc4fb83b1c081f0b3a5bd7fe49c65b91608ba
 
 ## Running
 

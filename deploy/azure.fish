@@ -11,7 +11,7 @@
 # These are read from the repo-root .env (a variable already set in the shell wins):
 #   UNSLOTH_BASE_URL, UNSLOTH_MODEL, UNSLOTH_API_KEY  - OCR model endpoint (must be reachable from Azure)
 #   RXLABEL_BASE_URL, RXLABEL_API_KEY                 - drug-interaction API used by /api/interactions
-#   CORS_ORIGINS                                      - comma-separated frontend origins (optional)
+#   UPLOAD_TTL                                        - seconds before an upload is deleted (optional, default 3600)
 #
 # What gets created in the resource group:
 #   - Container registry (ACR) $ACR: stores our Docker images; images are built
@@ -82,7 +82,7 @@ function dotenv_get --argument-names key
     string trim -- $value | string trim -c '"\''
 end
 
-for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY CORS_ORIGINS
+for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY UPLOAD_TTL
     set -q $key; and continue
     set -l value (dotenv_get $key)
     test -n "$value"; and set -gx $key $value
@@ -183,7 +183,7 @@ set -l DATABASE_URL "postgresql://$PG_USER:$PG_PASS@$DB_APP:5432/$PG_DB"
 
 set -l server_secrets database-url=$DATABASE_URL
 set -l server_env DATABASE_URL=secretref:database-url
-set -q CORS_ORIGINS; and set -a server_env CORS_ORIGINS=$CORS_ORIGINS
+set -q UPLOAD_TTL; and set -a server_env UPLOAD_TTL=$UPLOAD_TTL
 set -q UNSLOTH_BASE_URL; and set -a server_env UNSLOTH_BASE_URL=$UNSLOTH_BASE_URL
 set -q UNSLOTH_MODEL; and set -a server_env UNSLOTH_MODEL=$UNSLOTH_MODEL
 if set -q UNSLOTH_API_KEY
