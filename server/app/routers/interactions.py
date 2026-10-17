@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Body
 
 try:
     from interactions.interactions import get_interactions
@@ -27,7 +29,7 @@ def _find_substance_index(name: str, substances: list[str]) -> int | None:
 @router.post("")
 @router.post("/")
 def check_interactions(
-    substances: list[str],
+    substances: Annotated[list[str], Body(embed=True)],
 ) -> list[tuple[int, int, str, str]]:
     """Check drug interactions for a list of substances.
 

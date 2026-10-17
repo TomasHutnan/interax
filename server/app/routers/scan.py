@@ -44,7 +44,8 @@ def scan(
 
     The model decides whether the image shows packaging or a handwritten list.
     Each medication read from it is matched against SÚKL; medications already in
-    `meds` get their usage updated, new ones are appended. Returns the updated list.
+    `meds` get their usage (and, if matched, `mg`/`subs`) updated, new ones are
+    appended. Returns the updated list.
     """
     try:
         current = _meds_adapter.validate_json(meds)
@@ -73,7 +74,7 @@ def scan(
         if isinstance(result, auto.PackageResult):
             name = result.brandName or result.genericName
             query = " ".join(filter(None, [name, result.strength]))
-            scanned = [_resolve(conn, name, query=query)] if name else []
+            scanned = [_resolve(conn, name, result.usage or "", query=query)] if name else []
         else:
             scanned = [
                 _resolve(conn, med.name, med.usage or "") for med in result.medications

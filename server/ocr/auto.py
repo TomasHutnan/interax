@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field, TypeAdapter
 
 PROMPT = (
     "First decide what the image shows:\n"
-    '- "package": printed medication packaging (box, blister, bottle, label, leaflet).\n'
+    '- "package": printed medication packaging (box, blister, bottle, label, leaflet), '
+    "even if a pharmacist or doctor has written dosing instructions on it by hand.\n"
     '- "handwritten": a list or schedule of medications written on paper '
     "(handwritten or printed), possibly with several medications.\n"
     "Then extract the information for that kind.\n"
@@ -21,6 +22,11 @@ PROMPT = (
     "For package: the brand (trade) name, generic name, active substance(s), strength "
     "(e.g. 500 mg), dosage form (e.g. tablets, syrup), quantity (e.g. 20 tablets) and "
     "manufacturer. Normalize the brand/generic name. If a field is not visible, use null.\n"
+    "Also look for dosing instructions added to the package by hand or on a sticker, "
+    "usually by the pharmacist (e.g. \"1-0-1\", \"3x denně\", \"ráno 1\"). Return them as "
+    "usage, normalized to the notations described under handwritten below. Printed "
+    "text such as the leaflet's general dosage advice is NOT usage. If there is no "
+    'such note, use "".\n'
     "For handwritten: read ALL medications, one entry per medication, in the order they "
     "appear. Do not skip lines, do not merge different medications, and do not invent "
     "entries. If no medication is visible, return an empty list. For each medication extract:\n"
@@ -39,7 +45,7 @@ PROMPT = (
     "Respond with ONLY valid JSON, no commentary, in exactly one of these shapes:\n"
     '{"kind":"package","brandName":"string","genericName":"string or null",'
     '"activeSubstance":"string","strength":"string","dosageForm":"string",'
-    '"quantity":"string","manufacturer":"string"}\n'
+    '"quantity":"string","manufacturer":"string","usage":"string"}\n'
     '{"kind":"handwritten","medications":[{"name":"string","usage":"string"}]}'
 )
 
@@ -58,6 +64,7 @@ class PackageResult(BaseModel):
     brandName: str | None = None
     genericName: str | None = None
     strength: str | None = None
+    usage: str | None = None  # pharmacist's handwritten dosing note, if any
 
 
 class HandwrittenResult(BaseModel):

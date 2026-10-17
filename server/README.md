@@ -26,12 +26,15 @@ server/
 │   ├── prescriptions.py # Prescription model + SÚKL lookup + merge
 │   └── routers/
 │       ├── auth.py      # POST /api/auth/login, /api/auth/logout (dummy)
+│       ├── dictate.py   # POST /dictate (audio or transcript -> prescriptions)
 │       ├── health.py    # GET  /health
 │       ├── medications.py # GET /medications/substances?name=...
 │       ├── regimens.py  # GET  /regimens/find?text=..., /regimens/components?name=...
-│       └── scan.py      # POST /scan (auto-detects package vs handwritten)
+│       ├── scan.py      # POST /scan (auto-detects package vs handwritten)
+│       └── uploads.py   # POST /api/uploads, GET|DELETE /api/uploads/{id} (JSON blobs)
 └── ocr/                 # OCR modules (OpenAI-compatible vision endpoint)
     ├── auto.py          # classify + extract in one model call
+    ├── dictation.py     # local Whisper transcription + text-only medication extraction
     ├── package.py       # dedicated packaging prompt
     └── handwritten.py   # dedicated handwritten-list prompt
 ```
@@ -40,11 +43,20 @@ server/
 
 All settings come from the **repo-root `.env`** (shared with the `db` service; see `.env.example`).
 
+<<<<<<< HEAD
 | Variable                                                 | Used for                                                          |
 | -------------------------------------------------------- | ----------------------------------------------------------------- |
 | `DATABASE_URL`                                           | Postgres connection (required)                                    |
 | `CORS_ORIGINS`                                           | Comma-separated allowed origins (default `http://localhost:3000`) |
 | `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint                                                |
+| `WHISPER_MODEL`                                          | Local Whisper model for `/dictate` (default `small`)              |
+| `WHISPER_LANGUAGE`                                       | Spoken language (default `cs`; empty = auto-detect)               |
+=======
+| Variable                                                 | Used for                       |
+| -------------------------------------------------------- | ------------------------------ |
+| `DATABASE_URL`                                           | Postgres connection (required) |
+| `UNSLOTH_BASE_URL` / `UNSLOTH_API_KEY` / `UNSLOTH_MODEL` | OCR model endpoint             |
+>>>>>>> c24bc4fb83b1c081f0b3a5bd7fe49c65b91608ba
 
 ## Running
 
@@ -92,7 +104,9 @@ The result is merged into `meds` and the updated list is returned:
   Only its `usage` is updated, and only when the image showed one. Substances are not used for
   matching, so different products with the same substance (e.g. generics) stay separate.
 - Otherwise it is **appended**. The order of `meds` is preserved.
-- Packaging has no dosing, so a package scan only adds the product if it's missing.
+- A package scan also reads dosing instructions a pharmacist wrote on the box by hand (or on a
+  sticker) as its `usage`; printed leaflet dosage is ignored. Without such a note, `usage` is `""`
+  and an already-present product keeps its usage.
 
 `usage` is normalized to one of these notations, or `""` if not written / not recognised:
 
@@ -101,6 +115,24 @@ The result is merged into `meds` and the updated list is returned:
 | `a-b-c`   | pieces in the morning, at noon, in the evening |
 | `k*`      | k times a day, no set time                     |
 | `á n dní` | one piece every n days                         |
+
+## `POST /dictate`
+
+Multipart form with `meds` (as for `/scan`) and exactly one of:
+
+- `file`: an audio recording (webm, m4a, mp3, wav, ...; max 25 MB), transcribed locally by
+  Whisper ([faster-whisper](https://github.com/SYSTRAN/faster-whisper), CPU, int8). The Docker
+  image bakes in the model; to use another one, build with
+  `docker compose build --build-arg WHISPER_MODEL=medium server` (better Czech, ~3x slower).
+- `text`: a transcript made elsewhere (e.g. the browser's Web Speech API).
+
+The chat model (text only) then extracts each medication and its usage, in the same notations
+as `/scan`. The SÚKL lookup and merge are the same as for `/scan`. Returns the transcript too,
+so the user can check what was understood:
+
+```jsonc
+{ "transcript": "Prestarium neo pět miligramů jednu ráno...", "meds": [ ... ] }
+```
 
 ## `GET /medications/substances?name=...`
 
