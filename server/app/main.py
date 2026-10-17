@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.auth import security_middleware
 from app.config import settings
 from app.db import create_pool
 from app.routers import (
@@ -17,6 +18,7 @@ from app.routers import (
     scan,
     uploads,
 )
+from app.schema import SchemaKeeper
 from app.upload_expiry import UploadExpiry
 
 
@@ -25,6 +27,13 @@ async def lifespan(app: FastAPI):
     pool = create_pool()
     pool.open()
     app.state.pool = pool
+    schema = SchemaKeeper(
+        pool,
+        bootstrap_username=settings.bootstrap_admin_username,
+        bootstrap_password=settings.bootstrap_admin_password,
+    )
+    schema.start()
+    app.state.schema = schema
     upload_expiry = UploadExpiry(pool, settings.upload_ttl)
     upload_expiry.start()
     app.state.upload_expiry = upload_expiry
@@ -32,6 +41,7 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         upload_expiry.stop()
+        schema.stop()
         pool.close()
 
 
@@ -54,10 +64,14 @@ async def catch_unhandled_errors(request: Request, call_next):
         )
 
 
+app.middleware("http")(security_middleware)
+
 app.add_middleware(
     CORSMiddleware,
-    # Any origin may call the API. Credentials (cookies) stay disabled: browsers
-    # reject `Access-Control-Allow-Origin: *` on credentialed requests.
+    # The browser app reaches the API same-origin (Next.js rewrites /api/*), so
+    # this only matters for other origins calling the anonymous patient endpoints.
+    # Never enable allow_credentials: the CSRF protection in app/auth.py relies on
+    # credentialed cross-origin requests being refused.
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],

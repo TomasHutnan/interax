@@ -1,22 +1,32 @@
 "use client";
-import { ReactNode, useCallback, useMemo, useState, useSyncExternalStore } from "react";
-import { AuthContext, User } from "@/components/contexts/auth";
+import { ReactNode, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { AuthContext } from "@/components/contexts/auth";
 import Menu from "@/components/menu/menu";
-import { parseUser, readRawUser, saveUser, subscribeForms } from "@/lib/storage";
+import { useSession } from "@/lib/hooks/use-session";
+import { forgetLegacyUser } from "@/lib/storage";
+
+const LOGIN_PATH = "/doctor";
 
 export default function DoctorShell({ children }: { children: ReactNode }) {
-    // undefined until the local storage can be read (server render and hydration)
-    const raw = useSyncExternalStore<string | null | undefined>(subscribeForms, readRawUser, () => undefined);
-    // used only if the local storage is not writable (e.g. blocked), so that logging in still works for this session
-    const [fallback, setFallback] = useState<User | null>(null);
-    const stored = useMemo(() => raw === undefined ? null : parseUser(raw), [raw]);
+  const session = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const loggedOut = session.loaded && !session.user;
 
-    const setUser = useCallback((user: User | null) => setFallback(saveUser(user) ? null : user), []);
+  useEffect(() => forgetLegacyUser(), []);
 
-    return <AuthContext.Provider value={{user: stored ?? fallback, loaded: raw !== undefined, setUser}}>
-        <Menu />
-        <main className={"min-h-dvh flex flex-col text-sm py-16 px-8 md:px-32"}>
-            {children}
-        </main>
+  // also covers sessions that end while a page is open (expiry, logout elsewhere)
+  useEffect(() => {
+    if (loggedOut && pathname !== LOGIN_PATH) router.replace(LOGIN_PATH);
+  }, [loggedOut, pathname, router]);
+
+  return (
+    <AuthContext.Provider value={session}>
+      <Menu />
+      <main className={"min-h-dvh flex flex-col text-sm py-16 px-8 md:px-32"}>
+        {loggedOut && pathname !== LOGIN_PATH ? null : children}
+      </main>
     </AuthContext.Provider>
+  );
 }

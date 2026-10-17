@@ -1,13 +1,19 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
+
+from app.auth import require_user
 
 try:
     from interactions.interactions import get_interactions
 except ModuleNotFoundError:
     from server.interactions.interactions import get_interactions
 
-router = APIRouter(prefix="/api/interactions", tags=["interactions"])
+router = APIRouter(
+    prefix="/api/interactions",
+    tags=["interactions"],
+    dependencies=[Depends(require_user)],
+)
 
 
 def _find_substance_index(name: str, substances: list[str]) -> int | None:

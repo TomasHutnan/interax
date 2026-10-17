@@ -1,6 +1,6 @@
 """Dictation endpoint: spoken (or already transcribed) medication list -> prescriptions.
 
-Sync (`def`) for the same reason as `/scan`: Whisper and the model call block,
+Sync (`def`) for the same reason as `/api/scan`: Whisper and the model call block,
 so FastAPI runs this in its threadpool instead of blocking the event loop.
 """
 
@@ -13,7 +13,7 @@ from pydantic import BaseModel, TypeAdapter, ValidationError
 
 from app.prescriptions import Prescription, lookup_prescription, merge_prescriptions
 
-router = APIRouter(prefix="/dictate", tags=["dictate"])
+router = APIRouter(prefix="/api/dictate", tags=["dictate"])
 
 _meds_adapter = TypeAdapter(list[Prescription])
 
@@ -50,7 +50,9 @@ def dictate(
 
     text = (text or "").strip()
     if (file is None) == (not text):
-        raise HTTPException(status_code=422, detail="send exactly one of `file` or `text`")
+        raise HTTPException(
+            status_code=422, detail="send exactly one of `file` or `text`"
+        )
 
     if file is not None:
         content_type = file.content_type or ""

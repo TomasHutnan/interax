@@ -4,9 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from psycopg import Connection
 from psycopg.rows import DictRow
 
+from app.auth import require_user
 from app.db import get_conn
 
-router = APIRouter(prefix="/regimens", tags=["regimens"])
+router = APIRouter(
+    prefix="/api/regimens", tags=["regimens"], dependencies=[Depends(require_user)]
+)
 
 
 def _escape_like(value: str) -> str:
