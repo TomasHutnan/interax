@@ -5,6 +5,7 @@ import { Interaction, MPatientForm } from "@/lib/typings";
 import { useGetInteractions } from "@/lib/hooks/bundles";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
+import { useTranslations } from "next-intl";
 import {
   interactionInputs,
   meetsThreshold,
@@ -12,7 +13,6 @@ import {
   rowOf,
   Severity,
   SEVERITIES,
-  SEVERITY_LABELS,
 } from "@/lib/interactions";
 
 type Props = {
@@ -34,29 +34,28 @@ export default function InteractionsPanel({
   setThreshold,
   onLoaded,
 }: Props) {
+  const t = useTranslations("interactions");
   const inputs = useMemo(() => interactionInputs(state), [state]);
 
   return (
-    <div className="w-[300px] border border-muted-foreground shadow-md p-4 space-y-2">
-      <div className={"flex gap-x-2 justify-between items-center"}>
-        <p className="font-bold">Interactions:</p>
+    <div className="sticky top-16 self-start shrink-0 w-[300px] max-h-[75dvh] flex flex-col gap-2 border border-muted-foreground surface shadow-md p-4">
+      <div className={"flex shrink-0 gap-x-2 justify-between items-center"}>
+        <p className="font-bold">{t("panel.title")}</p>
         <div className={"flex gap-x-2 items-center"}>
           <Button
             type={"button"}
             variant={"outline"}
-            aria-label={"Close interactions"}
+            aria-label={t("panel.closeLabel")}
             onClick={() => setOpen(false)}
           >
             <XIcon />
-            Close
+            {t("panel.close")}
           </Button>
         </div>
       </div>
       <SeveritySlider threshold={threshold} setThreshold={setThreshold} />
       {!inputs.complete ? (
-        <p className="text-center">
-          Fill in all substances to check interactions.
-        </p>
+        <p className="text-center">{t("panel.incomplete")}</p>
       ) : (
         <Internal
           state={state}
@@ -78,10 +77,11 @@ export function SeveritySlider({
   threshold: Severity;
   setThreshold: Dispatch<SetStateAction<Severity>>;
 }) {
+  const t = useTranslations("interactions");
   return (
-    <label className="block space-y-1 pb-2 border-b border-border">
+    <label className="block shrink-0 space-y-1 pb-2 border-b border-border">
       <span className="flex justify-between text-sm">
-        <span>Minimum severity:</span>
+        <span>{t("slider.label")}</span>
         <IntBadge0 severity={threshold} />
       </span>
       <input
@@ -94,7 +94,7 @@ export function SeveritySlider({
         onChange={(e) =>
           setThreshold(SEVERITIES[Number(e.target.value)] ?? "unknown")
         }
-        aria-valuetext={SEVERITY_LABELS[threshold]}
+        aria-valuetext={t(`severity.${threshold}`)}
       />
     </label>
   );
@@ -115,6 +115,7 @@ function Internal({
   setHighlight: Dispatch<SetStateAction<number[]>>;
   onLoaded: Props["onLoaded"];
 }) {
+  const t = useTranslations("interactions");
   const { trigger, isMutating, data } = useGetInteractions();
 
   // Keyed by the substance list itself, so editing e.g. a usage doesn't re-check.
@@ -134,36 +135,36 @@ function Internal({
     return (
       <div className="w-full flex flex-col items-center gap-2 pt-4 text-sm text-muted-foreground">
         <Spinner />
-        Checking interactions...
+        {t("panel.checking")}
       </div>
     );
 
   if (data.length === 0)
-    return <p className="text-center">No interactions found.</p>;
+    return <p className="text-center">{t("panel.none")}</p>;
 
   const shown = data.filter((int) => meetsThreshold(int, threshold));
   const hidden = data.length - shown.length;
 
   return (
     <>
-      {shown.length === 0 && (
-        <p className="text-center">
-          No interactions at or above this severity.
-        </p>
-      )}
-      {shown.map((e, i) => (
-        <Int
-          state={state}
-          key={i}
-          int={e}
-          offsets={offsets}
-          setHighlight={setHighlight}
-        />
-      ))}
+      {/* only the list scrolls; header, slider and the hidden-count footer stay put */}
+      <div className="-mx-4 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 [scrollbar-gutter:stable] [scrollbar-width:thin]">
+        {shown.length === 0 && (
+          <p className="text-center">{t("panel.noneAtThreshold")}</p>
+        )}
+        {shown.map((e, i) => (
+          <Int
+            state={state}
+            key={i}
+            int={e}
+            offsets={offsets}
+            setHighlight={setHighlight}
+          />
+        ))}
+      </div>
       {hidden > 0 && (
-        <p className="text-center text-sm text-muted-foreground">
-          {hidden} less severe {hidden === 1 ? "interaction" : "interactions"}{" "}
-          hidden.
+        <p className="shrink-0 border-t border-border pt-2 text-center text-sm text-muted-foreground">
+          {t("panel.hidden", { count: hidden })}
         </p>
       )}
     </>
@@ -181,6 +182,7 @@ function Int({
   offsets: number[];
   setHighlight: Dispatch<SetStateAction<number[]>>;
 }) {
+  const t = useTranslations("interactions");
   const [hovered, setHovered] = useState(false);
   const offset = state.prescriptions.length;
   const fi = rowOf(int[0], offsets),
@@ -214,11 +216,14 @@ function Int({
       <p className="font-bold flex flex-wrap items-center gap-x-1">
         <IntBadge int={int} />
         <span>
-          <span className="underline">{first}</span> and{" "}
-          <span className="underline">{second}</span>
+          {t.rich("panel.pair", {
+            first,
+            second,
+            u: (chunks) => <span className="underline">{chunks}</span>,
+          })}
         </span>
       </p>
-      <p>{int[2] || "No explanation available."}</p>
+      <p>{int[2] || t("panel.noExplanation")}</p>
     </div>
   );
 }
@@ -242,14 +247,15 @@ const BADGES: Record<
 
 export function IntBadge({ int }: { int: Interaction }) {
   const severity = normalizeSeverity(int[3]);
-    return <IntBadge0 severity={severity} />
+  return <IntBadge0 severity={severity} />;
 }
 
 export function IntBadge0({ severity }: { severity: Severity }) {
+  const t = useTranslations("interactions");
   const badge = BADGES[severity];
   return (
     <Badge variant={badge.variant} className={badge.className}>
-      {SEVERITY_LABELS[severity]}
+      {t(`severity.${severity}`)}
     </Badge>
   );
 }

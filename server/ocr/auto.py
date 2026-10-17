@@ -5,11 +5,12 @@ and extracts the matching structure; the result's `kind` says which one.
 """
 
 import base64
+import re
 from typing import Annotated, Literal
 
 import requests
 from ocr import package
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, Field, TypeAdapter, field_validator
 
 PROMPT = (
     "First decide what the image shows:\n"
@@ -38,8 +39,8 @@ PROMPT = (
     'the evening -> return e.g. "1-0-1".\n'
     '  2. "á n dní" / "á n dny" (one piece every n days; the accent on "á" may be '
     'missing) -> return e.g. "á 2 dny".\n'
-    '  3. "k*" or "kx" (e.g. "3*", "2x denně"; k times a day, no set time) '
-    '-> return e.g. "3*".\n'
+    '  3. "kx" or "k*" (e.g. "3x", "3*", "2x denně"; k times a day, no set time) '
+    '-> return e.g. "3x".\n'
     '  If no usage is written, or it matches none of these notations, use "". Do not guess.\n'
     "Keep text in the original language. "
     "Respond with ONLY valid JSON, no commentary, in exactly one of these shapes:\n"
@@ -48,6 +49,13 @@ PROMPT = (
     '"quantity":"string","manufacturer":"string","usage":"string"}\n'
     '{"kind":"handwritten","medications":[{"name":"string","usage":"string"}]}'
 )
+
+# "3*" / "3 ×" -> "3x": the times-a-day notation is shown as "kx", whatever the model returns.
+_TIMES_A_DAY = re.compile(r"(\d)\s*[*×]")
+
+
+def normalize_usage(usage: str | None) -> str | None:
+    return _TIMES_A_DAY.sub(r"\1x", usage) if usage else usage
 
 
 class HandwrittenMedication(BaseModel):
@@ -58,6 +66,11 @@ class HandwrittenMedication(BaseModel):
         None  # tolerate null from the model; normalized to "" downstream
     )
 
+    @field_validator("usage")
+    @classmethod
+    def times_a_day_as_x(cls, usage: str | None) -> str | None:
+        return normalize_usage(usage)
+
 
 class PackageResult(BaseModel):
     """Only the fields needed to look the product up; the model may omit any of them."""
@@ -67,6 +80,11 @@ class PackageResult(BaseModel):
     genericName: str | None = None
     strength: str | None = None
     usage: str | None = None  # pharmacist's handwritten dosing note, if any
+
+    @field_validator("usage")
+    @classmethod
+    def times_a_day_as_x(cls, usage: str | None) -> str | None:
+        return normalize_usage(usage)
 
 
 class HandwrittenResult(BaseModel):

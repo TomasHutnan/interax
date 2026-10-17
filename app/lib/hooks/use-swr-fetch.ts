@@ -3,6 +3,7 @@ import useSWRImmutable from "swr/immutable";
 import useSWRMutation from "swr/mutation";
 import { useCallback } from "react";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n";
 
 export const ImmutableConfig = {
   revalidateIfStale: false,
@@ -50,25 +51,25 @@ export function getErrorMessage(
 
     switch (err.status) {
       case 400:
-        return "Malformed request (E400).";
+        return tr("errors.http.badRequest");
       case 401:
-        return "You are not logged in (E401).";
+        return tr("errors.http.unauthorized");
       case 403:
-        return "You do not have permission to do that (E403).";
+        return tr("errors.http.forbidden");
       case 404:
-        return "Not found (E404).";
+        return tr("errors.http.notFound");
       case 429:
-        return "Too many requests. Wait a moment and try again (E429).";
+        return tr("errors.http.tooManyRequests");
       case 500:
-        return "Server error occurred. Try again. (E500).";
+        return tr("errors.http.serverError");
       case 503:
-        return "The service is temporarily unavailable. Try again shortly (E503).";
+        return tr("errors.http.unavailable");
       default:
-        return `This did not work out (${err.message}).`;
+        return tr("errors.http.other", { message: err.message });
     }
   }
 
-  return `This did not work out (${err.message})`;
+  return tr("errors.unknown", { message: err.message });
 }
 
 export default function useSWRFetch<T>(
@@ -89,7 +90,10 @@ type MutateMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export type MutationOptions<T, D> = {
   body?: boolean;
-  toastMessages?: {
+  /**
+   * Called each time a toast is shown, so the messages follow the current language.
+   */
+  toastMessages?: () => {
     loading: string;
     success: string;
     error: { [k: number]: string };
@@ -129,7 +133,7 @@ export function useSWRMutationFetch<T, D>(
       });
 
       if (options.toastMessages) {
-        const msgs = options.toastMessages;
+        const msgs = options.toastMessages();
         promise = toast.promise(promise, {
           loading: msgs.loading,
           success: msgs.success,

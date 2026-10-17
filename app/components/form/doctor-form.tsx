@@ -9,6 +9,7 @@ import {
 import PrescriptionTable from "./prescription-table";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import TreatmentTable from "./treatment-table";
 import DoctorFormControls from "./doctor-form-controls";
 import { toast } from "../ui/toast";
@@ -17,6 +18,7 @@ import FinishDialog from "./finish-dialog";
 import { Severity } from "@/lib/interactions";
 
 export default function DoctorForm({ form }: { form: PatientForm }) {
+  const t = useTranslations("doctor.form");
   const router = useRouter();
   const [state, setState] = useState<MPatientForm>(toMPatientForm(form));
   const [showInts, setShowInts] = useState(false);
@@ -47,17 +49,17 @@ export default function DoctorForm({ form }: { form: PatientForm }) {
     router.replace("/doctor/code");
     toast.add({
       type: "info",
-      title: "Session closed",
+      title: t("sessionClosed"),
     });
-  }, [router]);
+  }, [router, t]);
 
   const reset = useCallback(() => {
     toast.add({
       type: "info",
-      title: "Form reset.",
+      title: t("reset"),
     });
     setState(toMPatientForm(form));
-  }, [form]);
+  }, [form, t]);
 
   return (
     <div className="flex gap-x-4">

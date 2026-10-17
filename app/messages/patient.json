@@ -1,0 +1,258 @@
+{
+  "en": {
+    "list": {
+      "title": "Your forms",
+      "create": "Create new",
+      "empty": "You have no forms yet.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "revoke": "Revoke code",
+      "getCode": "Get code",
+      "copyPin": "Copy PIN",
+      "pin": "PIN: {code}",
+      "expiresIn": "Expires in {time}",
+      "noRegimen": "No regimen",
+      "noPrescriptions": "No prescriptions",
+      "confirmDelete": "Delete this form?",
+      "toasts": {
+        "deleted": "Form deleted.",
+        "deleteFailed": "Could not delete the form.",
+        "pinCopied": "PIN copied to clipboard.",
+        "pinCopyFailed": "Could not copy the PIN.",
+        "generating": "Generating code...",
+        "codeCreated": "Code created.",
+        "codeNotSaved": "The code could not be saved on this device.",
+        "revoking": "Revoking code...",
+        "revoked": "Code revoked."
+      }
+    },
+    "editor": {
+      "prescriptions": "Prescriptions:",
+      "scan": "Scan",
+      "processing": "Processing...",
+      "recording": "Recording...",
+      "holdToSpeak": "Hold to speak",
+      "addManually": "Add manually",
+      "empty": "No prescriptions added.",
+      "drug": "Drug",
+      "dosing": "Dosing",
+      "dosingPlaceholder": "e.g. 1-0-1-0",
+      "remove": "Remove",
+      "regimen": "Regimen:",
+      "cancel": "Cancel",
+      "save": "Save",
+      "mic": {
+        "denied": "Microphone access was denied.",
+        "notFound": "No microphone found.",
+        "failed": "Could not start recording."
+      },
+      "toasts": {
+        "readingPhoto": "Reading photo...",
+        "scanned": "Medications updated from photo.",
+        "holdWhileSpeaking": "Hold the button while speaking.",
+        "transcribing": "Transcribing recording...",
+        "dictated": "Medications updated from dictation.",
+        "saveFailed": "Could not save the form.",
+        "saved": "Form saved."
+      }
+    },
+    "scan": {
+      "unexpected": "Unexpected response from the server"
+    },
+    "uploads": {
+      "unexpected": "Unexpected response from the server"
+    }
+  },
+  "cs": {
+    "list": {
+      "title": "Vaše formuláře",
+      "create": "Vytvořit nový",
+      "empty": "Zatím nemáte žádné formuláře.",
+      "edit": "Upravit",
+      "delete": "Smazat",
+      "revoke": "Zrušit kód",
+      "getCode": "Získat kód",
+      "copyPin": "Zkopírovat PIN",
+      "pin": "PIN: {code}",
+      "expiresIn": "Vyprší za {time}",
+      "noRegimen": "Bez léčebného režimu",
+      "noPrescriptions": "Bez předepsaných léků",
+      "confirmDelete": "Smazat tento formulář?",
+      "toasts": {
+        "deleted": "Formulář byl smazán.",
+        "deleteFailed": "Formulář se nepodařilo smazat.",
+        "pinCopied": "PIN byl zkopírován do schránky.",
+        "pinCopyFailed": "PIN se nepodařilo zkopírovat.",
+        "generating": "Vytvářím kód...",
+        "codeCreated": "Kód byl vytvořen.",
+        "codeNotSaved": "Kód se nepodařilo uložit v tomto zařízení.",
+        "revoking": "Ruším kód...",
+        "revoked": "Kód byl zrušen."
+      }
+    },
+    "editor": {
+      "prescriptions": "Předepsané léky:",
+      "scan": "Naskenovat",
+      "processing": "Zpracovávám...",
+      "recording": "Nahrávám...",
+      "holdToSpeak": "Podržte a mluvte",
+      "addManually": "Přidat ručně",
+      "empty": "Zatím nejsou přidané žádné léky.",
+      "drug": "Lék",
+      "dosing": "Dávkování",
+      "dosingPlaceholder": "např. 1-0-1-0",
+      "remove": "Odebrat",
+      "regimen": "Léčebný režim:",
+      "cancel": "Zrušit",
+      "save": "Uložit",
+      "mic": {
+        "denied": "Přístup k mikrofonu byl zamítnut.",
+        "notFound": "Nebyl nalezen žádný mikrofon.",
+        "failed": "Nahrávání se nepodařilo spustit."
+      },
+      "toasts": {
+        "readingPhoto": "Čtu fotku...",
+        "scanned": "Léky byly doplněny podle fotky.",
+        "holdWhileSpeaking": "Během mluvení držte tlačítko stisknuté.",
+        "transcribing": "Přepisuji nahrávku...",
+        "dictated": "Léky byly doplněny podle nahrávky.",
+        "saveFailed": "Formulář se nepodařilo uložit.",
+        "saved": "Formulář byl uložen."
+      }
+    },
+    "scan": {
+      "unexpected": "Neočekávaná odpověď serveru"
+    },
+    "uploads": {
+      "unexpected": "Neočekávaná odpověď serveru"
+    }
+  },
+  "sk": {
+    "list": {
+      "title": "Vaše formuláre",
+      "create": "Vytvoriť nový",
+      "empty": "Zatiaľ nemáte žiadne formuláre.",
+      "edit": "Upraviť",
+      "delete": "Vymazať",
+      "revoke": "Zrušiť kód",
+      "getCode": "Získať kód",
+      "copyPin": "Skopírovať PIN",
+      "pin": "PIN: {code}",
+      "expiresIn": "Vyprší o {time}",
+      "noRegimen": "Bez liečebného režimu",
+      "noPrescriptions": "Bez predpísaných liekov",
+      "confirmDelete": "Vymazať tento formulár?",
+      "toasts": {
+        "deleted": "Formulár bol vymazaný.",
+        "deleteFailed": "Formulár sa nepodarilo vymazať.",
+        "pinCopied": "PIN bol skopírovaný do schránky.",
+        "pinCopyFailed": "PIN sa nepodarilo skopírovať.",
+        "generating": "Vytváram kód...",
+        "codeCreated": "Kód bol vytvorený.",
+        "codeNotSaved": "Kód sa nepodarilo uložiť v tomto zariadení.",
+        "revoking": "Ruším kód...",
+        "revoked": "Kód bol zrušený."
+      }
+    },
+    "editor": {
+      "prescriptions": "Predpísané lieky:",
+      "scan": "Naskenovať",
+      "processing": "Spracúvam...",
+      "recording": "Nahrávam...",
+      "holdToSpeak": "Podržte a hovorte",
+      "addManually": "Pridať ručne",
+      "empty": "Zatiaľ nie sú pridané žiadne lieky.",
+      "drug": "Liek",
+      "dosing": "Dávkovanie",
+      "dosingPlaceholder": "napr. 1-0-1-0",
+      "remove": "Odstrániť",
+      "regimen": "Liečebný režim:",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "mic": {
+        "denied": "Prístup k mikrofónu bol zamietnutý.",
+        "notFound": "Nenašiel sa žiadny mikrofón.",
+        "failed": "Nahrávanie sa nepodarilo spustiť."
+      },
+      "toasts": {
+        "readingPhoto": "Čítam fotku...",
+        "scanned": "Lieky boli doplnené podľa fotky.",
+        "holdWhileSpeaking": "Počas hovorenia držte tlačidlo stlačené.",
+        "transcribing": "Prepisujem nahrávku...",
+        "dictated": "Lieky boli doplnené podľa nahrávky.",
+        "saveFailed": "Formulár sa nepodarilo uložiť.",
+        "saved": "Formulár bol uložený."
+      }
+    },
+    "scan": {
+      "unexpected": "Neočakávaná odpoveď servera"
+    },
+    "uploads": {
+      "unexpected": "Neočakávaná odpoveď servera"
+    }
+  },
+  "uk": {
+    "list": {
+      "title": "Ваші анкети",
+      "create": "Створити нову",
+      "empty": "У вас ще немає анкет.",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "revoke": "Відкликати код",
+      "getCode": "Отримати код",
+      "copyPin": "Скопіювати PIN",
+      "pin": "PIN: {code}",
+      "expiresIn": "Діє ще {time}",
+      "noRegimen": "Без схеми лікування",
+      "noPrescriptions": "Немає призначених ліків",
+      "confirmDelete": "Видалити цю анкету?",
+      "toasts": {
+        "deleted": "Анкету видалено.",
+        "deleteFailed": "Не вдалося видалити анкету.",
+        "pinCopied": "PIN скопійовано в буфер обміну.",
+        "pinCopyFailed": "Не вдалося скопіювати PIN.",
+        "generating": "Створюємо код...",
+        "codeCreated": "Код створено.",
+        "codeNotSaved": "Не вдалося зберегти код на цьому пристрої.",
+        "revoking": "Відкликаємо код...",
+        "revoked": "Код відкликано."
+      }
+    },
+    "editor": {
+      "prescriptions": "Призначені ліки:",
+      "scan": "Сканувати",
+      "processing": "Обробка...",
+      "recording": "Запис...",
+      "holdToSpeak": "Утримуйте, щоб говорити",
+      "addManually": "Додати вручну",
+      "empty": "Ліки ще не додано.",
+      "drug": "Препарат",
+      "dosing": "Дозування",
+      "dosingPlaceholder": "напр. 1-0-1-0",
+      "remove": "Видалити",
+      "regimen": "Схема лікування:",
+      "cancel": "Скасувати",
+      "save": "Зберегти",
+      "mic": {
+        "denied": "Доступ до мікрофона заборонено.",
+        "notFound": "Мікрофон не знайдено.",
+        "failed": "Не вдалося почати запис."
+      },
+      "toasts": {
+        "readingPhoto": "Розпізнаємо фото...",
+        "scanned": "Ліки оновлено за фото.",
+        "holdWhileSpeaking": "Утримуйте кнопку, поки говорите.",
+        "transcribing": "Розпізнаємо запис...",
+        "dictated": "Ліки оновлено за голосовим записом.",
+        "saveFailed": "Не вдалося зберегти анкету.",
+        "saved": "Анкету збережено."
+      }
+    },
+    "scan": {
+      "unexpected": "Неочікувана відповідь сервера"
+    },
+    "uploads": {
+      "unexpected": "Неочікувана відповідь сервера"
+    }
+  }
+}

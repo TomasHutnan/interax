@@ -32,6 +32,7 @@ async def lifespan(app: FastAPI):
         pool,
         bootstrap_username=settings.bootstrap_admin_username,
         bootstrap_password=settings.bootstrap_admin_password,
+        seed_dev_users=settings.seed_dev_users,
     )
     schema.start()
     app.state.schema = schema

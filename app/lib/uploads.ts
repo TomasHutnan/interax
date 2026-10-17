@@ -1,5 +1,6 @@
 import { UPLOAD_TTL_MS } from "@/lib/constants";
 import { baseFetcher, HttpError } from "@/lib/hooks/use-swr-fetch";
+import { tr } from "@/lib/i18n";
 import { isEmptyPrescription } from "@/lib/prescriptions";
 import { Upload } from "@/lib/storage";
 import { PatientForm } from "@/lib/typings";
@@ -77,7 +78,7 @@ export async function uploadForm(form: PatientForm): Promise<Upload> {
     !isDate(data?.expires_at) ||
     typeof data?.revoke_token !== "string"
   )
-    throw new Error("Unexpected response from the server");
+    throw new Error(tr("patient.uploads.unexpected"));
 
   return {
     id: data.id,

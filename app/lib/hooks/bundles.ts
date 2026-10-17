@@ -4,15 +4,16 @@ import useSWRFetch, {
   MutationOptions,
   useSWRMutationFetch,
 } from "./use-swr-fetch";
+import { tr } from "../i18n";
 
 const getFormOptions: MutationOptions<string, { data: PatientForm }> = {
-  toastMessages: {
-    loading: "Looking up code...",
-    success: "Patient form loaded.",
+  toastMessages: () => ({
+    loading: tr("toasts.form.loading"),
+    success: tr("toasts.form.success"),
     error: {
-      [404]: "No patient form found for this code.",
+      [404]: tr("toasts.form.notFound"),
     },
-  },
+  }),
   onMutation: async (code, form) => {
     await mutate(`/api/uploads/${encodeURIComponent(code)}`, form, {
       populateCache: true,
@@ -31,13 +32,13 @@ export function useGetForm() {
 }
 
 const getComponentsOptions: MutationOptions<string, string[]> = {
-  toastMessages: {
-    loading: "Loading regimen substances...",
-    success: "Regimen substances loaded.",
+  toastMessages: () => ({
+    loading: tr("toasts.regimen.loading"),
+    success: tr("toasts.regimen.success"),
     error: {
-      [404]: "Regimen not found.",
+      [404]: tr("toasts.regimen.notFound"),
     },
-  },
+  }),
   onMutation: async (name, form) => {
     await mutate(
       `/api/regimens/components?name=${encodeURIComponent(name)}`,

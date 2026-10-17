@@ -1,0 +1,102 @@
+{
+  "en": {
+    "severity": {
+      "unknown": "Unknown",
+      "minor": "Minor",
+      "moderate": "Moderate",
+      "major": "Major",
+      "contraindicated": "Contraindicated"
+    },
+    "pair": "{first} and {second}",
+    "panel": {
+      "title": "Interactions:",
+      "close": "Close",
+      "closeLabel": "Close interactions",
+      "incomplete": "Fill in all substances to check interactions.",
+      "checking": "Checking interactions...",
+      "none": "No interactions found.",
+      "noneAtThreshold": "No interactions at or above this severity.",
+      "hidden": "{count, plural, one {# less severe interaction hidden.} other {# less severe interactions hidden.}}",
+      "noExplanation": "No explanation available.",
+      "pair": "<u>{first}</u> and <u>{second}</u>"
+    },
+    "slider": {
+      "label": "Minimum severity:"
+    }
+  },
+  "cs": {
+    "severity": {
+      "unknown": "Neznámá",
+      "minor": "Nízká",
+      "moderate": "Střední",
+      "major": "Závažná",
+      "contraindicated": "Kontraindikace"
+    },
+    "pair": "{first} a {second}",
+    "panel": {
+      "title": "Interakce:",
+      "close": "Zavřít",
+      "closeLabel": "Zavřít interakce",
+      "incomplete": "Pro kontrolu interakcí vyplňte všechny léčivé látky.",
+      "checking": "Kontrola interakcí...",
+      "none": "Nebyly nalezeny žádné interakce.",
+      "noneAtThreshold": "Žádné interakce s touto nebo vyšší závažností.",
+      "hidden": "{count, plural, one {# méně závažná interakce je skryta.} few {# méně závažné interakce jsou skryty.} many {# méně závažné interakce je skryto.} other {# méně závažných interakcí je skryto.}}",
+      "noExplanation": "Vysvětlení není k dispozici.",
+      "pair": "<u>{first}</u> a <u>{second}</u>"
+    },
+    "slider": {
+      "label": "Minimální závažnost:"
+    }
+  },
+  "sk": {
+    "severity": {
+      "unknown": "Neznáma",
+      "minor": "Nízka",
+      "moderate": "Stredná",
+      "major": "Závažná",
+      "contraindicated": "Kontraindikácia"
+    },
+    "pair": "{first} a {second}",
+    "panel": {
+      "title": "Interakcie:",
+      "close": "Zavrieť",
+      "closeLabel": "Zavrieť interakcie",
+      "incomplete": "Na kontrolu interakcií vyplňte všetky liečivé látky.",
+      "checking": "Kontrola interakcií...",
+      "none": "Nenašli sa žiadne interakcie.",
+      "noneAtThreshold": "Žiadne interakcie s touto alebo vyššou závažnosťou.",
+      "hidden": "{count, plural, one {# menej závažná interakcia je skrytá.} few {# menej závažné interakcie sú skryté.} many {# menej závažnej interakcie je skrytých.} other {# menej závažných interakcií je skrytých.}}",
+      "noExplanation": "Vysvetlenie nie je k dispozícii.",
+      "pair": "<u>{first}</u> a <u>{second}</u>"
+    },
+    "slider": {
+      "label": "Minimálna závažnosť:"
+    }
+  },
+  "uk": {
+    "severity": {
+      "unknown": "Невідома",
+      "minor": "Низька",
+      "moderate": "Помірна",
+      "major": "Висока",
+      "contraindicated": "Протипоказання"
+    },
+    "pair": "{first} і {second}",
+    "panel": {
+      "title": "Взаємодії:",
+      "close": "Закрити",
+      "closeLabel": "Закрити взаємодії",
+      "incomplete": "Заповніть усі діючі речовини, щоб перевірити взаємодії.",
+      "checking": "Перевірка взаємодій...",
+      "none": "Взаємодій не знайдено.",
+      "noneAtThreshold": "Немає взаємодій такої або вищої тяжкості.",
+      "hidden": "{count, plural, one {Приховано # менш тяжку взаємодію.} few {Приховано # менш тяжкі взаємодії.} many {Приховано # менш тяжких взаємодій.} other {Приховано # менш тяжкої взаємодії.}}",
+      "noExplanation": "Пояснення недоступне.",
+      "pair": "<u>{first}</u> і <u>{second}</u>"
+    },
+    "slider": {
+      "label": "Мінімальна тяжкість:"
+    }
+  }
+}
