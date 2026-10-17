@@ -107,7 +107,8 @@ function dotenv_get --argument-names key
 end
 
 for key in UNSLOTH_BASE_URL UNSLOTH_MODEL UNSLOTH_API_KEY RXLABEL_BASE_URL RXLABEL_API_KEY \
-        UPLOAD_TTL SESSION_TTL SESSION_IDLE_TTL BOOTSTRAP_ADMIN_USERNAME BOOTSTRAP_ADMIN_PASSWORD
+        UPLOAD_TTL SESSION_TTL SESSION_IDLE_TTL BOOTSTRAP_ADMIN_USERNAME BOOTSTRAP_ADMIN_PASSWORD \
+        IRIS_HOST IRIS_PORT IRIS_HTTP_PORT IRIS_NAMESPACE IRIS_USER IRIS_PASSWORD
     set -q $key; and continue
     set -l value (dotenv_get $key)
     test -n "$value"; and set -gx $key $value
@@ -119,6 +120,7 @@ echo "UNSLOTH_MODEL    = "(set -q UNSLOTH_MODEL; and echo $UNSLOTH_MODEL; or ech
 echo "UNSLOTH_API_KEY  = "(set -q UNSLOTH_API_KEY; and echo "(set, hidden)"; or echo "(not set)")
 echo "RXLABEL_BASE_URL = "(set -q RXLABEL_BASE_URL; and echo $RXLABEL_BASE_URL; or echo "(not set)")
 echo "RXLABEL_API_KEY  = "(set -q RXLABEL_API_KEY; and echo "(set, hidden)"; or echo "(not set)")
+echo "IRIS             = "(set -q IRIS_HOST; and echo "$IRIS_HOST:"(set -q IRIS_PORT; and echo $IRIS_PORT; or echo 1972)" (password "(set -q IRIS_PASSWORD; and echo set; or echo "not set")")"; or echo "(not set, interactions use the fallback)")
 echo "BOOTSTRAP_ADMIN  = "(set -q BOOTSTRAP_ADMIN_USERNAME; and set -q BOOTSTRAP_ADMIN_PASSWORD; and echo "$BOOTSTRAP_ADMIN_USERNAME (password hidden)"; or echo "(not set)")
 
 step "Hashing build folders"
@@ -214,7 +216,8 @@ set -l DATABASE_URL "postgresql://$PG_USER:$PG_PASS@$DB_APP:5432/$PG_DB"
 
 set -l server_secrets database-url=$DATABASE_URL
 set -l server_env DATABASE_URL=secretref:database-url
-for key in UPLOAD_TTL SESSION_TTL SESSION_IDLE_TTL UNSLOTH_BASE_URL UNSLOTH_MODEL RXLABEL_BASE_URL
+for key in UPLOAD_TTL SESSION_TTL SESSION_IDLE_TTL UNSLOTH_BASE_URL UNSLOTH_MODEL RXLABEL_BASE_URL \
+        IRIS_HOST IRIS_PORT IRIS_HTTP_PORT IRIS_NAMESPACE IRIS_USER
     set -q $key; and set -a server_env $key=$$key
 end
 if set -q UNSLOTH_API_KEY
@@ -224,6 +227,10 @@ end
 if set -q RXLABEL_API_KEY
     set -a server_secrets rxlabel-api-key=$RXLABEL_API_KEY
     set -a server_env RXLABEL_API_KEY=secretref:rxlabel-api-key
+end
+if set -q IRIS_PASSWORD
+    set -a server_secrets iris-password=$IRIS_PASSWORD
+    set -a server_env IRIS_PASSWORD=secretref:iris-password
 end
 if set -q BOOTSTRAP_ADMIN_USERNAME; and set -q BOOTSTRAP_ADMIN_PASSWORD
     set -a server_secrets bootstrap-admin-password=$BOOTSTRAP_ADMIN_PASSWORD
