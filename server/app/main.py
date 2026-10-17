@@ -14,6 +14,7 @@ from app.routers import (
     scan,
     uploads,
 )
+from app.upload_expiry import UploadExpiry
 
 
 @asynccontextmanager
@@ -21,9 +22,13 @@ async def lifespan(app: FastAPI):
     pool = create_pool()
     pool.open()
     app.state.pool = pool
+    upload_expiry = UploadExpiry(pool, settings.upload_ttl)
+    upload_expiry.start()
+    app.state.upload_expiry = upload_expiry
     try:
         yield
     finally:
+        upload_expiry.stop()
         pool.close()
 
 
