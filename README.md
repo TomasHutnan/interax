@@ -10,7 +10,7 @@ Built for the **PillGaze** challenge at Rakathon.
 
 ### [🚀 Live demo: interax.hutnan.dev](https://interax.hutnan.dev/)
 
-<img src="docs/screenshots/landing.png" alt="InteraX landing page" width="560">
+<img src="docs/screenshots/title.png" alt="InteraX landing page" width="560">
 
 </div>
 
